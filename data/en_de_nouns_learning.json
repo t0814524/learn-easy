@@ -1,0 +1,17 @@
+[
+    {
+        "question": "time",
+        "answer": "zeit",
+        "type": "noun"
+    },
+    {
+        "question": "person",
+        "answer": "Person",
+        "type": "noun"
+    },
+    {
+        "question": "year",
+        "answer": "Jahr",
+        "type": "noun"
+    }
+]

@@ -2,9 +2,10 @@ import { useState } from "react";
 import { View, StyleSheet, SafeAreaView, Dimensions, Button, Text } from "react-native";
 import { Header } from "./Header";
 import { StatisticsView } from "./views/Statistics";
-import { CardFront } from "./views/Learn";
+import { CardFront, LearnView } from "./views/Learn";
 import { SettingsView } from "./views/Settings";
 import { HomeView } from "./views/Home";
+import cardsLearning from "../data/en_de_nouns_learning.json";
 
 
 export const screenWidth = Dimensions.get("window").width || 360 //get screen width or use 360 = avg screen width
@@ -38,12 +39,15 @@ const style = StyleSheet.create({
 
 export type Medium = "img" | "text" | "audio"
 export interface SettingsParams {
-    mediums: Medium[]
+    mediums: Medium[],
+    review: {
+        cardsPerDay: number
+    }
 }
 
-interface Card {
-    q: string
-    a: string
+export interface Card {
+    question: string
+    answer: string
     img?: string
     sound?: string
 }
@@ -52,6 +56,11 @@ export type Page = "home" | "learn" | "settings" | "statistics"
 export const Layout = () => {
 
     let [page, setPage] = useState<Page>("home");
+
+    /**
+     * todo put that in the settings
+     */
+    const cardsPerDay = 5
 
 
     /**
@@ -62,6 +71,12 @@ export const Layout = () => {
      * depends on how much work we want to put in the settings page  
      */
     let [mediumSettings, setMediumSettings] = useState<SettingsParams['mediums']>(["img", "text", "audio"]);
+
+    /**
+     * cards that need to be reviewed  
+     * todo: probably need componentDidMount or some bs here and write to file
+     */
+    let [cardsScheduled, setCardsScheduled] = useState<Card[]>(cardsLearning);
 
 
     const Separator = () => <View style={{
@@ -80,7 +95,8 @@ export const Layout = () => {
             case "settings":
                 return <SettingsView />
             case "learn":
-                return <CardFront
+                return <LearnView
+                    cards={cardsLearning}
                     mediumSettings={mediumSettings}
                 />
             case "statistics":
@@ -110,9 +126,7 @@ export const Layout = () => {
                     id="mainSection"
                     style={style.mainSection}
                 >
-                    {
-                        getMainContent()}
-
+                    {getMainContent()}
                 </View>
             </SafeAreaView >
         </View>
