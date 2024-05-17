@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View, StyleSheet, SafeAreaView, Dimensions, Button, Text } from "react-native";
 import { Header } from "./Header";
 import { StatisticsView } from "./views/Statistics";
-import { LearnView } from "./views/Learn";
+import { CardFront } from "./views/Learn";
 import { SettingsView } from "./views/Settings";
 import { HomeView } from "./views/Home";
 
@@ -36,10 +36,33 @@ const style = StyleSheet.create({
 
 })
 
+export type Medium = "img" | "text" | "audio"
+export interface SettingsParams {
+    mediums: Medium[]
+}
+
+interface Card {
+    q: string
+    a: string
+    img?: string
+    sound?: string
+}
+
 export type Page = "home" | "learn" | "settings" | "statistics"
 export const Layout = () => {
 
     let [page, setPage] = useState<Page>("home");
+
+
+    /**
+     * arr in the order the different mediums should be shown on the cards  
+     * 
+     * ask: 
+     * could be done for front and back but idk if we rlly need that, also the order!?  
+     * depends on how much work we want to put in the settings page  
+     */
+    let [mediumSettings, setMediumSettings] = useState<SettingsParams['mediums']>(["img", "text", "audio"]);
+
 
     const Separator = () => <View style={{
         marginVertical: 8,
@@ -50,11 +73,16 @@ export const Layout = () => {
     const getMainContent = () => {
         switch (page) {
             case "home":
-                return <HomeView />
+                return <HomeView
+                    page={page}
+                    setPage={setPage}
+                />
             case "settings":
                 return <SettingsView />
             case "learn":
-                return <LearnView />
+                return <CardFront
+                    mediumSettings={mediumSettings}
+                />
             case "statistics":
                 return <StatisticsView />
 
@@ -82,7 +110,9 @@ export const Layout = () => {
                     id="mainSection"
                     style={style.mainSection}
                 >
-                    {getMainContent()}
+                    {
+                        getMainContent()}
+
                 </View>
             </SafeAreaView >
         </View>
