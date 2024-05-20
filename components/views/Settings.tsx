@@ -1,18 +1,76 @@
 import {  StyleSheet, Text, TextInput, View } from "react-native";
-import { useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import CheckBox from 'expo-checkbox';
-
+import { EventRegister } from 'react-native-event-listeners';
+import { SettingsParams } from "../Layout";
 
 /**
  * Settings view    
  */
-export const SettingsView: React.FC<{}> = ({ }) => {
+export const SettingsView: FunctionComponent<SettingsParams> = ({mediums, cardsPerDay}) => {
 
     const [username, setUsername] = useState("");
     const [notifications, setNotifications] = useState(true);
-    const [showImages, setShowImages] = useState(true);
-    const [showAudio, setShowAudio] = useState(true);
+    const [showImages, setShowImages] = useState(false);
+    const [showText, setShowText] = useState(false);
+    const [showAudio, setShowAudio] = useState(false);
     const [autoplay, setAutoplay] = useState(true);
+
+    function makeMediaArray(char: string, activated: boolean){
+        let array = new Array<string>();
+        switch(char){
+            case 'i':{
+                activated ? array = array.concat("img") : {};
+                showText ? array = array.concat("text") : {};
+                showAudio ? array = array.concat("audio") : {};
+                break;
+            }
+            case 't':{
+                showImages ? array = array.concat("img") : {};
+                activated ? array = array.concat("text") : {};
+                showAudio ? array = array.concat("audio") : {};
+                break;
+            }
+            case 'a':{
+                showImages ? array = array.concat("img") : {};
+                showText ? array = array.concat("text") : {};
+                activated ? array = array.concat("audio") : {};
+                break;
+            }
+        }
+        //console.log(array[0]+array[1]+array[2]);
+        return array;
+    }
+    
+    function toggleShowImages(newValue: boolean){
+        setShowImages(newValue);
+        EventRegister.emit('toggleMedia', makeMediaArray('i',newValue));
+    }
+
+    function toggleShowText(newValue: boolean){
+        setShowText(newValue);
+        EventRegister.emit('toggleMedia', makeMediaArray('t',newValue));
+    }
+
+    function toggleShowAudio(newValue: boolean){
+        setShowAudio(newValue);
+        EventRegister.emit('toggleMedia', makeMediaArray('a',newValue));
+    }
+
+    function determineSettings(){
+        for(let i=0;i<mediums.length;++i){
+            switch(mediums[i]){
+                case "img": setShowImages(true); break;
+                case "text": setShowText(true); break;
+                case "audio": setShowAudio(true); break;
+            }
+        }
+        console.log("determineSettings() has been called!");
+    }
+
+    useEffect(() => {
+        determineSettings();
+      }, [])
 
     return (
     <View style={styles.mainContainer}>
@@ -42,7 +100,15 @@ export const SettingsView: React.FC<{}> = ({ }) => {
                 <CheckBox
                     disabled={false}
                     value={showImages}
-                    onValueChange={(newValue) => setShowImages(newValue)}
+                    onValueChange={() => toggleShowImages(!showImages)}
+                />
+            </View>
+            <View style={styles.checkboxContainer}>
+                <Text style={styles.inputText}>Show Text:</Text>
+                <CheckBox
+                    disabled={false}
+                    value={showText}
+                    onValueChange={() => toggleShowText(!showText)}
                 />
             </View>
             <View style={styles.checkboxContainer}>
@@ -50,7 +116,7 @@ export const SettingsView: React.FC<{}> = ({ }) => {
                 <CheckBox
                     disabled={false}
                     value={showAudio}
-                    onValueChange={(newValue) => setShowAudio(newValue)}
+                    onValueChange={() => toggleShowAudio(!showAudio)}
                 />
             </View>
             <View style={styles.checkboxContainer}>
@@ -106,7 +172,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#d2d2d2',
         padding: 10,
         borderRadius: 5,
-      },
+    },
     rowContainer: {
       flexDirection: 'row',
       alignItems: 'center',

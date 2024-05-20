@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, StyleSheet, SafeAreaView, Dimensions, Button, Text } from "react-native";
+import { EventRegister } from 'react-native-event-listeners';
 import { Header } from "./Header";
 import { StatisticsView } from "./views/Statistics";
-import { CardFront, LearnView } from "./views/Learn";
+import { LearnView } from "./views/Learn";
 import { SettingsView } from "./views/Settings";
 import { HomeView } from "./views/Home";
 import cardsLearning from "../data/en_de_nouns_learning.json";
@@ -40,9 +41,7 @@ const style = StyleSheet.create({
 export type Medium = "img" | "text" | "audio"
 export interface SettingsParams {
     mediums: Medium[],
-    review: {
-        cardsPerDay: number
-    }
+    cardsPerDay: number,
 }
 
 export interface Card {
@@ -56,7 +55,7 @@ export type Page = "home" | "learn" | "settings" | "statistics"
 export const Layout = () => {
 
     let [page, setPage] = useState<Page>("home");
-
+    
     /**
      * todo put that in the settings
      */
@@ -78,6 +77,13 @@ export const Layout = () => {
      */
     let [cardsScheduled, setCardsScheduled] = useState<Card[]>(cardsLearning);
 
+    useEffect(() => {
+        EventRegister.addEventListener('toggleMedia', (media) => {
+            console.log(media);
+            setMediumSettings(media);
+        });
+
+      }, [])
 
     const Separator = () => <View style={{
         marginVertical: 8,
@@ -93,7 +99,7 @@ export const Layout = () => {
                     setPage={setPage}
                 />
             case "settings":
-                return <SettingsView />
+                return <SettingsView mediums={mediumSettings} cardsPerDay={cardsPerDay} />
             case "learn":
                 return <LearnView
                     cards={cardsLearning}
