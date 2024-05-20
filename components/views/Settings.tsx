@@ -7,9 +7,9 @@ import { SettingsParams } from "../Layout";
 /**
  * Settings view    
  */
-export const SettingsView: FunctionComponent<SettingsParams> = ({mediums, cardsPerDay}) => {
+export const SettingsView: FunctionComponent<SettingsParams> = ({mediums, cardsPerDay, username}) => {
 
-    const [username, setUsername] = useState("");
+    const [nickname, setNickname] = useState("");
     const [notifications, setNotifications] = useState(true);
     const [showImages, setShowImages] = useState(false);
     const [showText, setShowText] = useState(false);
@@ -58,6 +58,7 @@ export const SettingsView: FunctionComponent<SettingsParams> = ({mediums, cardsP
     }
 
     function determineSettings(){
+        //console.log("determineSettings() has been called!");
         for(let i=0;i<mediums.length;++i){
             switch(mediums[i]){
                 case "img": setShowImages(true); break;
@@ -65,7 +66,12 @@ export const SettingsView: FunctionComponent<SettingsParams> = ({mediums, cardsP
                 case "audio": setShowAudio(true); break;
             }
         }
-        console.log("determineSettings() has been called!");
+        setNickname(username);
+    }
+
+    function submitNewUsername(){
+        //console.log(nickname);
+        EventRegister.emit('submitUsername', nickname);
     }
 
     useEffect(() => {
@@ -80,8 +86,9 @@ export const SettingsView: FunctionComponent<SettingsParams> = ({mediums, cardsP
                 <Text style={styles.inputText}>username:</Text>
                 <TextInput
                     style={styles.input}
-                    onChangeText={(value) => setUsername(value)}
-                    placeholder={"enter your username here"}
+                    onChangeText={(value) => setNickname(value)}
+                    onSubmitEditing={() => submitNewUsername()}
+                    placeholder={username}
                 />
             </View>
             <View style={styles.checkboxContainer}>

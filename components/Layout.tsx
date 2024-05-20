@@ -42,6 +42,7 @@ export type Medium = "img" | "text" | "audio"
 export interface SettingsParams {
     mediums: Medium[],
     cardsPerDay: number,
+    username: string,
 }
 
 export interface Card {
@@ -55,6 +56,7 @@ export type Page = "home" | "learn" | "settings" | "statistics"
 export const Layout = () => {
 
     let [page, setPage] = useState<Page>("home");
+    const [username, setUsername] = useState("enter username here"); //default string shown at start, is replaced by username when set
     
     /**
      * todo put that in the settings
@@ -82,8 +84,21 @@ export const Layout = () => {
             console.log(media);
             setMediumSettings(media);
         });
+        return () => {
+            EventRegister.removeEventListener('toggleMedia');
+        }
+      }, []);
 
-      }, [])
+      useEffect(() => {
+        EventRegister.addEventListener('submitUsername', (username) => {
+            console.log("new username == " + username);
+            setUsername(username);
+        });
+        return () => {
+            EventRegister.removeEventListener('submitUsername');
+        }
+      }, []);
+      
 
     const Separator = () => <View style={{
         marginVertical: 8,
@@ -99,7 +114,7 @@ export const Layout = () => {
                     setPage={setPage}
                 />
             case "settings":
-                return <SettingsView mediums={mediumSettings} cardsPerDay={cardsPerDay} />
+                return <SettingsView mediums={mediumSettings} cardsPerDay={cardsPerDay} username={username} />
             case "learn":
                 return <LearnView
                     cards={cardsLearning}
