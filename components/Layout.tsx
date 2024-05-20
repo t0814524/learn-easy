@@ -33,7 +33,7 @@ const style = StyleSheet.create({
     },
     mainSection: {
         flex: 10,
-        backgroundColor: "green"
+        backgroundColor: "#58d68d"
     }
 
 })
