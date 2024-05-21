@@ -6,7 +6,7 @@ import { StatisticsView } from "./views/Statistics";
 import { LearnView } from "./views/Learn";
 import { SettingsView } from "./views/Settings";
 import { HomeView } from "./views/Home";
-import cardsLearning from "../data/en_de_nouns_learning.json";
+import cards from "../data/en_de_nouns_learning.json";
 
 
 export const screenWidth = Dimensions.get("window").width || 360 //get screen width or use 360 = avg screen width
@@ -38,12 +38,63 @@ const style = StyleSheet.create({
 
 })
 
+export type Topic = "en_de" | "geography" | "idktodo"
 export type Medium = "img" | "text" | "audio"
+
+
+
 export interface SettingsParams {
+    username: string,
     mediums: Medium[],
     cardsPerDay: number,
-    username: string,
 }
+/**
+ * @nelin, @emanuel 
+ * I d propose sth like that as settings: 
+ * idk if this requires changes from u
+ */
+export interface SettingsParams2 {
+    username: string,
+    topics: { [key in Topic]?: TopicSettings }
+}
+
+interface TopicSettings {
+    mediums: Medium[],
+    /**
+     * todo put that in the settings
+     */
+    cardsPerDay: number,
+
+}
+
+/**
+ * settings plus additional configs  
+ * use some sort of persistent storage to save this config / the state of the app  
+ */
+export interface TopicConfig extends TopicSettings {
+    /**
+     * number of cards being learnt  
+     * 
+     * As we do not implement sorting of decks and they have a fixed order, we can store a list of cards per topic.  
+     * A number ({@link cardsLearning}) which is the index up to which the cards are currently being lernt.  
+     * An array for cardsScheduled can be generated from the currently learnt cards under consideration of the sm2 properties.  
+     */
+    cardsLearning: number
+    cardsLastAdded?: Date
+}
+
+const TopicConfigDefault: TopicConfig = {
+    cardsLearning: 0,
+    cardsPerDay: 5,
+    mediums: ["img", "text", "audio"],
+    // cardsLastAdded: null
+}
+
+interface AppConfig {
+    username: string,
+    topics: { [key in Topic]?: TopicConfig }
+}
+
 
 export interface Card {
     question: string
@@ -56,12 +107,11 @@ export type Page = "home" | "learn" | "settings" | "statistics"
 export const Layout = () => {
 
     let [page, setPage] = useState<Page>("home");
+
+    //todo: @nelin pls impl setting the topic in home page
+    let [topic, setTopic] = useState<Topic>("en_de");
     const [username, setUsername] = useState("enter username here"); //default string shown at start, is replaced by username when set
-    
-    /**
-     * todo put that in the settings
-     */
-    const cardsPerDay = 5
+
 
 
     /**
@@ -77,7 +127,23 @@ export const Layout = () => {
      * cards that need to be reviewed  
      * todo: probably need componentDidMount or some bs here and write to file
      */
-    let [cardsScheduled, setCardsScheduled] = useState<Card[]>(cardsLearning);
+    let [cardsScheduled, setCardsScheduled] = useState<Card[]>();
+    let [cardsAddedLast, setCardsAddedLast] = useState();
+
+    //todo: get config from file, temp config
+    let config: AppConfig = {
+        username: "tobias",
+        topics: {
+            en_de: { ...TopicConfigDefault }
+        }
+    }
+
+    let [topicConfig, setTopicConfig] = useState<TopicConfig>();
+
+    //todo: test if i need that
+    // useEffect(() => {
+    //     setTopicConfig(config.topics[topic])
+    // }, [topic]);
 
     useEffect(() => {
         EventRegister.addEventListener('toggleMedia', (media) => {
@@ -87,9 +153,9 @@ export const Layout = () => {
         return () => {
             EventRegister.removeEventListener('toggleMedia');
         }
-      }, []);
+    }, []);
 
-      useEffect(() => {
+    useEffect(() => {
         EventRegister.addEventListener('submitUsername', (username) => {
             console.log("new username == " + username);
             setUsername(username);
@@ -97,8 +163,8 @@ export const Layout = () => {
         return () => {
             EventRegister.removeEventListener('submitUsername');
         }
-      }, []);
-      
+    }, []);
+
 
     const Separator = () => <View style={{
         marginVertical: 8,
@@ -110,14 +176,35 @@ export const Layout = () => {
         switch (page) {
             case "home":
                 return <HomeView
-                    page={page}
                     setPage={setPage}
                 />
             case "settings":
-                return <SettingsView mediums={mediumSettings} cardsPerDay={cardsPerDay} username={username} />
+                return <SettingsView mediums={mediumSettings} cardsPerDay={topicConfig?.cardsPerDay ?? 0} username={username} />
             case "learn":
+                console.log("learn in getmaincontentr")
+                // no topic selected, err
+                if (!topic) throw new Error("topic has to be selected before going to learn page");
+
+                // there is no config for this topic yet  
+                // if (!config.topics[topic])
+                // setTopicConfig({
+                //     ...TopicConfigDefault,
+                //     cardsLearning: TopicConfigDefault.cardsPerDay,
+                //     cardsLastAdded: new Date,
+                // })
+                // else {
+
+                // use config if already assigned (just need to save at some point), else use from config file, else use default
+                let tc = topicConfig || config.topics[topic] || TopicConfigDefault
+                tc.cardsLearning = TopicConfigDefault.cardsPerDay
+                tc.cardsLastAdded = new Date
+
+                // scuffed state mutation but should be alright as long as u cant edit the config from learn page,...  cant set here bc of fkn loop
+                // setTopicConfig(TopicConfigDefault)
+
                 return <LearnView
-                    cards={cardsLearning}
+                    topicConfig={tc}
+                    cards={cards}
                     mediumSettings={mediumSettings}
                 />
             case "statistics":

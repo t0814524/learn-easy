@@ -1,22 +1,22 @@
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
-import { Card, Medium, SettingsParams } from "../Layout";
+import { Text, View, StyleSheet, TouchableOpacity, Image, Dimensions } from "react-native";
+import { Card, Medium, SettingsParams, TopicConfig } from "../Layout";
 import { createEmptyCard, formatDate, fsrs, generatorParameters, Rating, Grades } from 'ts-fsrs';
 import { useState } from "react";
 
 const style = StyleSheet.create({
     img: {
-        flex: 0.7,
+        // flex: 0.7,
         width: "100%",
         minHeight: 56, //  https://m3.material.io/components/search/specs
         backgroundColor: "blue",
-        flexDirection: "row",
+        // flexDirection: "row",
     },
     text: {
         flex: 0.7,
         width: "100%",
         minHeight: 56, //  https://m3.material.io/components/search/specs
         backgroundColor: "blue",
-        flexDirection: "row",
+        // flexDirection: "row",
     },
     audio: {
         flex: 1,
@@ -65,19 +65,55 @@ function testFsrs() {
     });
 }
 
+interface LearnViewProps {
+    /**
+     * cards scheduled for review  
+     */
+    cards: Card[],
+    mediumSettings: SettingsParams['mediums']
+    topicConfig?: TopicConfig
+}
 
 /**
  * Learn View  
  */
-export const LearnView: React.FC<{ cards: Card[], mediumSettings: SettingsParams['mediums'] }> = ({ cards, mediumSettings }) => {
+export const LearnView: React.FC<LearnViewProps> = ({ cards, mediumSettings, topicConfig }) => {
     // export const CardView: React.FC<{ card: Card, mediumSettings: SettingsParams['mediums'] }> = ({ card, mediumSettings }) => {
 
     // testFsrs()
     console.log("cards")
     console.log(cards)
+    console.log(new Date)
+
+
 
     let [cardIdx, setCardIdx] = useState(0);
     let [front, setFront] = useState(true);
+
+
+    let card = cards[cardIdx]
+
+
+    let renderImg = () => {
+        console.log("card.img")
+        console.log(card)
+        if (!card.img) return
+        // throw new Error("no img url");
+
+        let [imgHeight, setimgHeight] = useState<number>(100);
+
+        const screenWidth = Dimensions.get("window").width || 360 //get screen width or use 360 = avg screen width
+
+        Image.getSize(card.img, (width, height) => {
+            setimgHeight(height * ((screenWidth) / width))
+        })
+
+        return <Image
+            style={{ width: screenWidth, height: imgHeight, resizeMode: "stretch" }}
+            source={{ uri: card.img }}
+        />
+
+    }
 
 
     const CardImg = () => (
@@ -85,7 +121,9 @@ export const LearnView: React.FC<{ cards: Card[], mediumSettings: SettingsParams
             id="img"
             style={style.img}>
 
-            <Text>Imaggge</Text>
+            {
+                renderImg()
+            }
         </View>
     )
 
@@ -94,7 +132,7 @@ export const LearnView: React.FC<{ cards: Card[], mediumSettings: SettingsParams
             id="text"
             style={style.text}>
 
-            <Text>text {front ? cards[cardIdx].question : cards[cardIdx].answer}</Text>
+            <Text>text {front ? card.question : card.answer}</Text>
         </View>
     )
 
