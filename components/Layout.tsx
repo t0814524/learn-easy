@@ -258,7 +258,7 @@ export const Layout = () => {
                 console.log("appConfig")
                 console.log(appConfig)
 
-                if (!appConfig.topics[topic]) setAppConfig({ ...appConfig, topics: { [topic]: TopicConfigDefault } }) // set default config if no config defined for topic  
+                // if (!appConfig.topics[topic]) setAppConfig({ ...appConfig, topics: { [topic]: TopicConfigDefault } }) // set default config if no config defined for topic  
 
                 // console.log(appConfig)
                 // let cardsLearningNew = appConfig.topics[topic]?.cardsLearning! + appConfig.topics[topic]?.cardsPerDay!
@@ -269,20 +269,22 @@ export const Layout = () => {
                 console.log("add cards")
                 let cardsLastAddedTime = appConfig?.topics[topic]?.cardsLastAdded
                 if (!cardsLastAddedTime || (new Date().getTime() - cardsLastAddedTime) > interval) { //todotodo: need to put that into one thing i think because otherwise it would need useeff to be available which creates a loop or cancel the setstate with return prev which also creates a lopp!!!! fk react
-                    // increse cards learning
+                    // cards learning should be increased 
                     setAppConfig(prev => {
-                        // let cardsLastAddedTime = prev?.topics[topic]?.cardsLastAdded
-                        // console.log("cardsLastAddedTime")
-                        // console.log(cardsLastAddedTime)
-                        // if (!cardsLastAddedTime || (new Date().getTime() - cardsLastAddedTime) > interval) {
-                        //     console.log("in iffff")
+                        let topicConfig = prev?.topics[topic] ?? TopicConfigDefault
+                        let cardsLearning = prev?.topics[topic]?.cardsLearning ?? 0
+                        let cardsPerDay = prev?.topics[topic]?.cardsPerDay ?? TopicConfigDefault.cardsPerDay
 
                         return {
                             ...appConfig, topics: {
-                                [topic]: {
-                                    cardsLearnign: prev?.topics[topic]?.cardsLearning! + prev?.topics[topic]?.cardsPerDay!,
+                                [topic]:
+                                {
+                                    ...topicConfig,
+                                    // cardsLearning: prev?.topics[topic]?.cardsLearning + prev?.topics[topic]?.cardsPerDay!,
+                                    cardsLearning: cardsLearning + cardsPerDay,
                                     cardsLastAdded: new Date().getTime()
                                 }
+
                             }
                         }
                         // }
