@@ -1,25 +1,28 @@
-const saveJsonToFile = async (data) => {
-    const path = `${RNFS.DocumentDirectoryPath}/mydata.json`;
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, AppState, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AppConfig } from './Layout';
 
+
+export const saveConfigAsyncStorage = async (config: AppConfig) => {
     try {
-        const jsonString = JSON.stringify(data);
-        await RNFS.writeFile(path, jsonString, 'utf8');
-        console.log('File written successfully to:', path);
-    } catch (error) {
-        console.error('Failed to write file:', error);
+        const jsonValue = JSON.stringify(config);
+        // await AsyncStorage.removeItem('config');
+        await AsyncStorage.setItem('config', jsonValue);
+    } catch (e) {
+        console.error("cant sace Config:")
+        console.error(e)
     }
 };
 
-const readJsonFromFile = async () => {
-    const path = `${RNFS.DocumentDirectoryPath}/mydata.json`;
-
+export const getConfigAsyncStorage = async () => {
     try {
-        const jsonString = await RNFS.readFile(path, 'utf8');
-        const data = JSON.parse(jsonString);
-        console.log('File read successfully:', data);
-        return data;
-    } catch (error) {
-        console.error('Failed to read file:', error);
-        return null;
+        const jsonValue = await AsyncStorage.getItem('config');
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+        console.error("error reading config");
+        console.error(e);
     }
 };
+// let asdf = { "test": "asdf1" }
+// saveConfigAsyncStorage("")

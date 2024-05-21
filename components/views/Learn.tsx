@@ -95,8 +95,7 @@ export const LearnView: React.FC<LearnViewProps> = ({ cards, mediumSettings, top
 
 
     let renderImg = () => {
-        console.log("card.img")
-        console.log(card)
+
         if (!card.img) return
         // throw new Error("no img url");
 

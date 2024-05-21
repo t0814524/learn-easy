@@ -7,6 +7,7 @@ import { LearnView } from "./views/Learn";
 import { SettingsView } from "./views/Settings";
 import { HomeView } from "./views/Home";
 import cards from "../data/en_de_nouns_learning.json";
+import { getConfigAsyncStorage, saveConfigAsyncStorage } from "./saveJson";
 
 
 export const screenWidth = Dimensions.get("window").width || 360 //get screen width or use 360 = avg screen width
@@ -80,7 +81,7 @@ export interface TopicConfig extends TopicSettings {
      * An array for cardsScheduled can be generated from the currently learnt cards under consideration of the sm2 properties.  
      */
     cardsLearning: number
-    cardsLastAdded?: Date
+    cardsLastAdded?: number
 }
 
 const TopicConfigDefault: TopicConfig = {
@@ -90,9 +91,13 @@ const TopicConfigDefault: TopicConfig = {
     // cardsLastAdded: null
 }
 
-interface AppConfig {
-    username: string,
+export interface AppConfig {
+    username?: string,
     topics: { [key in Topic]?: TopicConfig }
+}
+
+const AppConfigDefault = {
+    topics: {}
 }
 
 
@@ -105,11 +110,50 @@ export interface Card {
 
 export type Page = "home" | "learn" | "settings" | "statistics"
 export const Layout = () => {
+    let [appConfig, setAppConfig] = useState<AppConfig>();
+
+    /**
+     * save app config to file and state  
+     * @param config AppConfig to save  
+     */
+    const saveConfig = (config: AppConfig) => {
+        if (appConfig) {
+            console.log("saving config")
+            // setAppConfig(config)
+            saveConfigAsyncStorage(config)
+        }
+    }
+    useEffect(() => {
+        console.log("empty eff")
+        const getConfigFromStorage = async () => {
+            const config = await getConfigAsyncStorage()
+            console.log("setAppconfig")
+            console.log(config)
+            setAppConfig(config ?? AppConfigDefault)
+
+            // if (!config) {
+            //     config = AppConfigDefault
+            //     console.log("got config from default")
+            // }
+            // console.log("got config:")
+            // console.log(config)
+        }
+        getConfigFromStorage()
+    }, []);
+
+    useEffect(() => {
+        console.log("appconfig effect")
+        if (appConfig) saveConfig(appConfig)
+    }, [appConfig]);
+
+
+
 
     let [page, setPage] = useState<Page>("home");
 
     //todo: @nelin pls impl setting the topic in home page
     let [topic, setTopic] = useState<Topic>("en_de");
+
     const [username, setUsername] = useState("enter username here"); //default string shown at start, is replaced by username when set
 
 
@@ -130,15 +174,26 @@ export const Layout = () => {
     let [cardsScheduled, setCardsScheduled] = useState<Card[]>();
     let [cardsAddedLast, setCardsAddedLast] = useState();
 
+
     //todo: get config from file, temp config
-    let config: AppConfig = {
-        username: "tobias",
-        topics: {
-            en_de: { ...TopicConfigDefault }
-        }
-    }
+    // let config: AppConfig = {
+    //     username: "tobias",
+    //     topics: {
+    //         en_de: { ...TopicConfigDefault }
+    //     }
+    // }
 
     let [topicConfig, setTopicConfig] = useState<TopicConfig>();
+
+    // useEffect(() => {
+    //     let asdf: AppConfig = {
+    //         ...appConfig,
+    //         topics: {
+    //             [topic]: topicConfig
+    //         }
+    //     }
+    //     setAppConfig(asdf)
+    // }, [topicConfig]);
 
     //todo: test if i need that
     // useEffect(() => {
@@ -173,6 +228,8 @@ export const Layout = () => {
     }} />;
 
     const getMainContent = () => {
+        if (!appConfig) throw new Error("app config is required for main content, its checked in render method, rn cant infer it");
+
         switch (page) {
             case "home":
                 return <HomeView
@@ -183,7 +240,9 @@ export const Layout = () => {
             case "learn":
                 console.log("learn in getmaincontentr")
                 // no topic selected, err
-                if (!topic) throw new Error("topic has to be selected before going to learn page");
+                if (!topic) throw new Error("topic has to be selected before going to learn page"); //todo: make default nullish
+
+
 
                 // there is no config for this topic yet  
                 // if (!config.topics[topic])
@@ -195,15 +254,55 @@ export const Layout = () => {
                 // else {
 
                 // use config if already assigned (just need to save at some point), else use from config file, else use default
-                let tc = topicConfig || config.topics[topic] || TopicConfigDefault
-                tc.cardsLearning = TopicConfigDefault.cardsPerDay
-                tc.cardsLastAdded = new Date
+                console.log("appConfig")
+                console.log(appConfig)
+
+                if (!appConfig.topics[topic]) setAppConfig({ ...appConfig, topics: { [topic]: TopicConfigDefault } }) // set default config if no config defined for topic  
+
+                // console.log(appConfig)
+                // let cardsLearningNew = appConfig.topics[topic]?.cardsLearning! + appConfig.topics[topic]?.cardsPerDay!
+
+                // let interval = 1000 * 60 * 60 * 24 // 1d
+                let interval = 1000 * 60 * 2 // 1d
+                // add new cards if more than 24h since last added or none added yet
+                console.log("add cards")
+                let cardsLastAddedTime = appConfig?.topics[topic]?.cardsLastAdded
+                if (!cardsLastAddedTime || (new Date().getTime() - cardsLastAddedTime) > interval) { //todotodo: need to put that into one thing i think because otherwise it would need useeff to be available which creates a loop or cancel the setstate with return prev which also creates a lopp!!!! fk react
+                    // increse cards learning
+                    setAppConfig(prev => {
+                        // let cardsLastAddedTime = prev?.topics[topic]?.cardsLastAdded
+                        // console.log("cardsLastAddedTime")
+                        // console.log(cardsLastAddedTime)
+                        // if (!cardsLastAddedTime || (new Date().getTime() - cardsLastAddedTime) > interval) {
+                        //     console.log("in iffff")
+
+                        return {
+                            ...appConfig, topics: {
+                                [topic]: {
+                                    cardsLearnign: prev?.topics[topic]?.cardsLearning! + prev?.topics[topic]?.cardsPerDay!,
+                                    cardsLastAdded: new Date().getTime()
+                                }
+                            }
+                        }
+                        // }
+
+                        console.log("ret prev")
+
+                        return prev
+                    })
+                }
+
+
+                // let tc = appConfig!.topics[topic] || TopicConfigDefault // assert existence because getMainContent is only rendered if appConfig is truthy
+                // tc.cardsLearning += TopicConfigDefault.cardsPerDay
+                // tc.cardsLastAdded = new Date()
+
 
                 // scuffed state mutation but should be alright as long as u cant edit the config from learn page,...  cant set here bc of fkn loop
                 // setTopicConfig(TopicConfigDefault)
 
                 return <LearnView
-                    topicConfig={tc}
+                    topicConfig={appConfig.topics[topic]}
                     cards={cards}
                     mediumSettings={mediumSettings}
                 />
@@ -234,7 +333,10 @@ export const Layout = () => {
                     id="mainSection"
                     style={style.mainSection}
                 >
-                    {getMainContent()}
+                    {appConfig ? // main content is dependent on config
+                        getMainContent()
+                        : <Text>loading config...</Text>
+                    }
                 </View>
             </SafeAreaView >
         </View>
