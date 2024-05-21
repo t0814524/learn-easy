@@ -11,7 +11,7 @@ const style = StyleSheet.create({
         justifyContent: "center",
         position: "relative",
         borderRadius: 5,
-        backgroundColor: "#c39bd3",
+        backgroundColor: "#58B9FA",
         borderWidth: 1,
         borderColor: "black"
     },
@@ -36,22 +36,45 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        paddingTop: 50
     },
-    mainMenuText: {
+    welcomeText: {
+        fontSize: 28,
+        fontWeight: "bold",
+        marginBottom: 10,
+        textAlign: "center"
+    },
+    instructionText: {
+        fontSize: 18,
+        marginBottom: 30,
+        textAlign: "center"
+    },
+    headerSection: {
+        width: "100%",
+        alignItems: "center",
+        marginBottom: 20,
+    },
+    usernameText: {
         fontSize: 32,
         fontWeight: "bold",
-        marginBottom: 40
+        color: "black",
+        marginBottom: 20,
     }
 });
 
-
 export const HomeView: React.FC<{
-    setPage: (page: Page, topic?: string) => void
-}> = ({ setPage }) => {
+    setPage: (page: Page, topic?: string) => void,
+    username: string
+}> = ({ setPage, username }) => {
+    const welcomeMessage = username ? `Welcome to Learn Easy, ${username}!` : "Welcome to Learn Easy!";
+
     return (
         <View style={style.container}>
-            <Text style={style.mainMenuText}>Main Menu</Text>
+            <View style={style.headerSection}>
+                <Text style={style.welcomeText}>{welcomeMessage}</Text>
+                <Text style={style.instructionText}>Choose a topic to start</Text>
+            </View>
             {["italian", "spanish", "french", "geography", "history"].map((topic) => (
                 <View key={topic} style={style.topicContainer}>
                     <TouchableOpacity onPress={() => { setPage("learn", topic) }} style={style.topic}>
