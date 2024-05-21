@@ -29,12 +29,12 @@ const style = StyleSheet.create({
         flex: 0.7,
         width: "100%",
         minHeight: 56, //  https://m3.material.io/components/search/specs
-        backgroundColor: "blue",
+        backgroundColor: "#59A9FC",
         flexDirection: "row",
     },
     mainSection: {
         flex: 10,
-        backgroundColor: "#58d68d"
+        backgroundColor: "#F8DDFD"
     }
 
 })
@@ -154,7 +154,7 @@ export const Layout = () => {
     //todo: @nelin pls impl setting the topic in home page
     let [topic, setTopic] = useState<Topic>("en_de");
 
-    const [username, setUsername] = useState("enter username here"); //default string shown at start, is replaced by username when set
+    const [username, setUsername] = useState(""); //default string shown at start, is replaced by username when set
 
 
 
@@ -234,6 +234,7 @@ export const Layout = () => {
             case "home":
                 return <HomeView
                     setPage={setPage}
+                    username={username}
                 />
             case "settings":
                 return <SettingsView mediums={mediumSettings} cardsPerDay={topicConfig?.cardsPerDay ?? 0} username={username} />
