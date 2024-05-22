@@ -6,8 +6,9 @@ import { StatisticsView } from "./views/Statistics";
 import { LearnView } from "./views/Learn";
 import { SettingsView } from "./views/Settings";
 import { HomeView } from "./views/Home";
-import cards from "../data/en_de_nouns_learning.json";
+import cardsImport from "../data/en_de_nouns_learning.json";
 import { getConfigAsyncStorage, saveConfigAsyncStorage } from "./saveJson";
+import { Card as Sm2Card } from "../sm2/sm2";
 
 
 export const screenWidth = Dimensions.get("window").width || 360 //get screen width or use 360 = avg screen width
@@ -80,14 +81,21 @@ export interface TopicConfig extends TopicSettings {
      * A number ({@link cardsLearning}) which is the index up to which the cards are currently being lernt.  
      * An array for cardsScheduled can be generated from the currently learnt cards under consideration of the sm2 properties.  
      */
-    cardsLearning: number
+    cardsLearning: Card[]
     cardsLastAdded?: number
+    /**
+     * interval in ms in which new cards are added.  
+     * default should be 1 day but 1 min is helpful for testing
+     */
+    interval: number
 }
 
 const TopicConfigDefault: TopicConfig = {
-    cardsLearning: 0,
-    cardsPerDay: 5,
+    cardsLearning: [],
+    cardsPerDay: 1,
     mediums: ["img", "text", "audio"],
+    // interval: 1000 * 60 * 60 * 24 // 1d
+    interval: 1000 * 60 * 2 // 2min 
     // cardsLastAdded: null
 }
 
@@ -101,7 +109,7 @@ const AppConfigDefault = {
 }
 
 
-export interface Card {
+export interface Card extends Sm2Card {
     question: string
     answer: string
     img?: string
@@ -243,72 +251,100 @@ export const Layout = () => {
                 // no topic selected, err
                 if (!topic) throw new Error("topic has to be selected before going to learn page"); //todo: make default nullish
 
-
-
-                // there is no config for this topic yet  
-                // if (!config.topics[topic])
-                // setTopicConfig({
-                //     ...TopicConfigDefault,
-                //     cardsLearning: TopicConfigDefault.cardsPerDay,
-                //     cardsLastAdded: new Date,
-                // })
-                // else {
-
                 // use config if already assigned (just need to save at some point), else use from config file, else use default
                 console.log("appConfig")
                 console.log(appConfig)
 
+                // needed to put that into one thing i think because otherwise it would need useeff to be available which creates a loop or cancel the setstate with return prev which also creates a lopp!!!! fk react
                 // if (!appConfig.topics[topic]) setAppConfig({ ...appConfig, topics: { [topic]: TopicConfigDefault } }) // set default config if no config defined for topic  
 
-                // console.log(appConfig)
-                // let cardsLearningNew = appConfig.topics[topic]?.cardsLearning! + appConfig.topics[topic]?.cardsPerDay!
-
                 // let interval = 1000 * 60 * 60 * 24 // 1d
-                let interval = 1000 * 60 * 2 // 1d
+                let interval = appConfig.topics[topic]?.interval || TopicConfigDefault.interval
                 // add new cards if more than 24h since last added or none added yet
+                // ask: do we have/want a progress bar or sth showing how many new cards there are on main page? then this should be done before going to the learn page for all topics
                 console.log("add cards")
                 let cardsLastAddedTime = appConfig?.topics[topic]?.cardsLastAdded
-                if (!cardsLastAddedTime || (new Date().getTime() - cardsLastAddedTime) > interval) { //todotodo: need to put that into one thing i think because otherwise it would need useeff to be available which creates a loop or cancel the setstate with return prev which also creates a lopp!!!! fk react
-                    // cards learning should be increased 
-                    setAppConfig(prev => {
-                        let topicConfig = prev?.topics[topic] ?? TopicConfigDefault
-                        let cardsLearning = prev?.topics[topic]?.cardsLearning ?? 0
-                        let cardsPerDay = prev?.topics[topic]?.cardsPerDay ?? TopicConfigDefault.cardsPerDay
+                // let cardsLearning = appConfig?.topics[topic]?.cardsLearning || TopicConfigDefault.cardsLearning
+                // let conf = { ...appConfig }
 
-                        return {
-                            ...appConfig, topics: {
-                                [topic]:
-                                {
-                                    ...topicConfig,
-                                    // cardsLearning: prev?.topics[topic]?.cardsLearning + prev?.topics[topic]?.cardsPerDay!,
-                                    cardsLearning: cardsLearning + cardsPerDay,
-                                    cardsLastAdded: new Date().getTime()
-                                }
 
+                let cards = cardsImport //todo: use  actual cards for this topic
+
+                // cards learning should be increased 
+                let cardsLearning = appConfig.topics[topic]?.cardsLearning ?? TopicConfigDefault.cardsLearning
+                if (!cardsLastAddedTime || (new Date().getTime() - cardsLastAddedTime) > interval) {
+
+                    let topicConfig = appConfig.topics[topic] ?? TopicConfigDefault
+                    let cardsPerDay = appConfig.topics[topic]?.cardsPerDay ?? TopicConfigDefault.cardsPerDay
+                    let newCards = cards.slice(cardsLearning.length, cardsLearning.length + cardsPerDay)
+
+
+                    let conf =
+                    {
+                        ...appConfig, topics: {
+                            [topic]:
+                            {
+                                ...topicConfig,
+                                cardsLearning: cardsLearning.concat(newCards.map(el => ({
+                                    ...el,
+                                    n: 0,
+                                    ef: 2.5,
+                                    i: 0,
+                                    due: new Date().getTime(), //todo: probably sub sth to make sure its added in next review
+
+                                })
+                                )),
+
+                                cardsLastAdded: new Date().getTime()
                             }
                         }
-                        // }
+                    }
+                    setAppConfig(conf)
+                    // setAppConfig(prev => {
+                    //     let topicConfig = prev?.topics[topic] ?? TopicConfigDefault
+                    //     cardsLearning = prev?.topics[topic]?.cardsLearning ?? TopicConfigDefault.cardsLearning
+                    //     let cardsPerDay = prev?.topics[topic]?.cardsPerDay ?? TopicConfigDefault.cardsPerDay
 
-                        console.log("ret prev")
+                    //     return {
+                    //         ...appConfig, topics: {
+                    //             [topic]:
+                    //             {
+                    //                 ...topicConfig,
+                    //                 cardsLearning: cardsLearning + cardsPerDay,
+                    //                 cardsLastAdded: new Date().getTime()
+                    //             }
+                    //         }
+                    //     }
+                    // })
 
-                        return prev
-                    })
+
+
+
+
+
                 }
 
+                console.log("cardsLearning")
+                console.log(cardsLearning)
+                let now = new Date().getTime()
+                // get cards scheduled
+                cardsScheduled = cardsLearning.filter(c => c.due < now)
+                console.log("cardsScheduled")
+                console.log(cardsScheduled)
 
-                // let tc = appConfig!.topics[topic] || TopicConfigDefault // assert existence because getMainContent is only rendered if appConfig is truthy
-                // tc.cardsLearning += TopicConfigDefault.cardsPerDay
-                // tc.cardsLastAdded = new Date()
+                return <>
+                    {
+                        cardsScheduled ?
+                            <LearnView
+                                topicConfig={appConfig.topics[topic]}
+                                cards={cardsScheduled}
+                                mediumSettings={mediumSettings}
+                            />
+                            : <Text>no cards scheduled rn</Text>
+                    }
+                </>
 
 
-                // scuffed state mutation but should be alright as long as u cant edit the config from learn page,...  cant set here bc of fkn loop
-                // setTopicConfig(TopicConfigDefault)
-
-                return <LearnView
-                    topicConfig={appConfig.topics[topic]}
-                    cards={cards}
-                    mediumSettings={mediumSettings}
-                />
             case "statistics":
                 return <StatisticsView />
 

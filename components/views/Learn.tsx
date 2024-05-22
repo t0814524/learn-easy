@@ -1,7 +1,8 @@
-import { Text, View, StyleSheet, TouchableOpacity, Image, Dimensions } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Image, Dimensions, Button } from "react-native";
 import { Card, Medium, SettingsParams, TopicConfig } from "../Layout";
 import { createEmptyCard, formatDate, fsrs, generatorParameters, Rating, Grades } from 'ts-fsrs';
 import { useState } from "react";
+import { sm2 } from "../../sm2/sm2";
 
 const style = StyleSheet.create({
     img: {
@@ -33,37 +34,6 @@ const style = StyleSheet.create({
     }
 })
 
-/**
- * todo: probably sm2 is the best we can 2  
- */
-function testFsrs() {
-    const params = generatorParameters({ enable_fuzz: true });
-    const f = fsrs(params);
-    const card = createEmptyCard(new Date('2022-2-1 10:00:00'));// createEmptyCard();
-    const now = new Date('2022-2-2 10:00:00');// new Date();
-    const scheduling_cards = f.repeat(card, now);
-
-    // console.log(scheduling_cards);
-    Grades.forEach(grade => { // [Rating.Again, Rating.Hard, Rating.Good, Rating.Easy]
-        const { log, card } = scheduling_cards[grade];
-        console.group(`${Rating[grade]}`);
-        console.table({
-            [`card_${Rating[grade]}`]: {
-                ...card,
-                due: formatDate(card.due),
-                last_review: formatDate(card.last_review as Date),
-            },
-        });
-        console.table({
-            [`log_${Rating[grade]}`]: {
-                ...log,
-                review: formatDate(log.review),
-            },
-        });
-        console.groupEnd();
-        console.log('----------------------------------------------------------------');
-    });
-}
 
 interface LearnViewProps {
     /**
@@ -78,12 +48,9 @@ interface LearnViewProps {
  * Learn View  
  */
 export const LearnView: React.FC<LearnViewProps> = ({ cards, mediumSettings, topicConfig }) => {
-    // export const CardView: React.FC<{ card: Card, mediumSettings: SettingsParams['mediums'] }> = ({ card, mediumSettings }) => {
 
-    // testFsrs()
     console.log("cards")
     console.log(cards)
-    console.log(new Date)
 
 
 
@@ -93,8 +60,28 @@ export const LearnView: React.FC<LearnViewProps> = ({ cards, mediumSettings, top
 
     let card = cards[cardIdx]
 
+    const rateCard = (rating: number) => {
+        console.log("rate card..")
+        console.log(cardIdx)
+        let card = cards[cardIdx]
+        console.log("card before rating")
+        console.log(card)
+        console.log("card after rating")
+        let cardRated = sm2(card, rating)
 
-    let renderImg = () => {
+        //ask again if < 4 according to sm2 spec
+        if (rating > 4) {
+            // cards.p
+        }
+
+        console.log(cardRated)
+        setCardIdx(prev => cardIdx < cards.length - 1 ? prev + 1 : 0);
+        // setCardIdx(prev => prev + 1);
+        setFront(true)
+    }
+
+
+    const renderImg = () => {
 
         if (!card.img) return
         // throw new Error("no img url");
@@ -131,7 +118,8 @@ export const LearnView: React.FC<LearnViewProps> = ({ cards, mediumSettings, top
             id="text"
             style={style.text}>
 
-            <Text>text {front ? card.question : card.answer}</Text>
+            <Text>idx:  {cardIdx}</Text>
+            <Text>text {front ? cards[cardIdx].question : cards[cardIdx].answer}</Text>
         </View>
     )
 
@@ -144,27 +132,32 @@ export const LearnView: React.FC<LearnViewProps> = ({ cards, mediumSettings, top
         </View>
     )
 
-    let mediumMap: { [key in Medium]: React.JSX.Element } = {
+    const mediumMap: { [key in Medium]: React.JSX.Element } = {
         img: <CardImg key="img" />,
         audio: <CardAudio key="audio" />,
         text: <CardText key="text" />
     }
 
     const CardRating = (
-        <TouchableOpacity
-            key="cardRating"
-            onPress={() => { setCardIdx(cardIdx++); }}>
+        // <TouchableOpacity
+        //     key="cardRating"
+        //     onPress={rateCard}>
 
-            <View
-                id="cardRating"
-                style={style.rating}>
+        <View
+            id="cardRating"
+            style={style.rating}>
 
-                <Text>Rate Difficulty</Text>
-            </View>
-        </TouchableOpacity>
+            <Text>Rate Difficulty</Text>
+            <Button onPress={() => rateCard(0)} title="Again" />
+            <Button onPress={() => rateCard(2)} title="Hard" />
+            <Button onPress={() => rateCard(3)} title="Good" />
+            <Button onPress={() => rateCard(5)} title="Easy" />
+        </View>
+        // </TouchableOpacity>
     )
 
-    let getContent = (cardIdx: number) => {
+    const getContent = (cardIdx: number) => {
+        console.log("getContent")
         let jsx = []
 
         for (let m of mediumSettings) {

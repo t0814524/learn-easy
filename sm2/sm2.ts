@@ -2,7 +2,7 @@
  * https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm
  */
 
-interface Card {
+export interface Card {
     /**
      * The repetition number n, which is the number of times the card has been successfully recalled (meaning it was given a grade ≥ 3) in a row since the last time it was not.  
      */
@@ -16,10 +16,15 @@ interface Card {
      */
     i: number
 
-    due: Date
+    /**
+     * date as timestamp
+     */
+    due: number
 }
+let interval = 1000 * 60 * 2 // 2min //todo: ether hardcode or pass config
 
 export function sm2(card: Card, q: number) {
+
     if (q < 0 || q > 5) throw new Error("invalid grade!");
     let n = card.n
     let ef = card.ef
@@ -43,6 +48,7 @@ export function sm2(card: Card, q: number) {
     card.ef = ef
     card.i = i
 
-    card.due = new Date();
-    card.due.setDate(card.due.getDate() + card.i);
+    card.due = new Date().getTime() + interval;
+    // card.due.setDate(card.due.getDate() + card.i);
+    return card
 }
