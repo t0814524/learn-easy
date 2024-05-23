@@ -1,8 +1,9 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image, Dimensions, Button } from "react-native";
-import { Card, Medium, SettingsParams, TopicConfig } from "../Layout";
+import { AppConfig, Card, Medium, SettingsParams, TopicConfig } from "../Layout";
 import { createEmptyCard, formatDate, fsrs, generatorParameters, Rating, Grades } from 'ts-fsrs';
 import { useState } from "react";
 import { sm2 } from "../../sm2/sm2";
+import { textToSpeech } from "../textToSpeech";
 
 const style = StyleSheet.create({
     img: {
@@ -20,7 +21,7 @@ const style = StyleSheet.create({
         // flexDirection: "row",
     },
     audio: {
-        flex: 1,
+        flex: 3,
         minHeight: 56,
         // minHeight: "100%",
         backgroundColor: 'yellow',
@@ -39,19 +40,35 @@ interface LearnViewProps {
     /**
      * cards scheduled for review  
      */
-    cards: Card[],
+    // cardsScheduled: Card[],
+    // appConfig: AppConfig
+    // setCardsScheduled: React.Dispatch<React.SetStateAction<Card[] | undefined>>
+    cardsLearning: Card[],
+    // setCardsLearning: Card[],
     mediumSettings: SettingsParams['mediums']
-    topicConfig?: TopicConfig
+    // topicConfig?: TopicConfig
+    onCardRated: (c: Card & { index: number }) => void
 }
 
 /**
  * Learn View  
  */
-export const LearnView: React.FC<LearnViewProps> = ({ cards, mediumSettings, topicConfig }) => {
+export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated, mediumSettings }) => {
+    console.log("cards in LearnView")
 
-    console.log("cards")
-    console.log(cards)
+    console.log("cardsLearning")
+    console.log(cardsLearning)
 
+    /**
+     * refers to cards scheduled for review  
+     * i put that in here because of state sync issues but i can move it up now probably if required for statistics / progress  
+     */
+    let cards = cardsLearning.filter(c => c.due < new Date().getTime()).sort((a: Card, b: Card) => b.due - a.due) // sort by due date
+
+    // console.log(new Date().getTime())
+    // console.log("cards scheduled")
+    // console.log(cards)
+    // console.log(new Date().getTime())
 
 
     let [cardIdx, setCardIdx] = useState(0);
@@ -62,21 +79,21 @@ export const LearnView: React.FC<LearnViewProps> = ({ cards, mediumSettings, top
 
     const rateCard = (rating: number) => {
         console.log("rate card..")
-        console.log(cardIdx)
-        let card = cards[cardIdx]
-        console.log("card before rating")
-        console.log(card)
-        console.log("card after rating")
-        let cardRated = sm2(card, rating)
+
+        //deep clone rn to check state bs
+        let cardRated = sm2(JSON.parse(JSON.stringify(card)), rating) as Card & { index: number }
 
         //ask again if < 4 according to sm2 spec
-        if (rating > 4) {
-            // cards.p
+        if (rating >= 4) {
+            // cards.pop()
+            console.log("call onCardRated")
+            // setCardIdx(prev => prev == 0 ? cards.length - 1 : prev - 1)
+            if (cardIdx == cards.length - 1) setCardIdx(0) // idk about these conditions, might be easier to use a stack and unshift 
+        } else {
+            // only increment index if no card was removed
+            setCardIdx(prev => cardIdx < cards.length - 1 ? prev + 1 : 0);
         }
-
-        console.log(cardRated)
-        setCardIdx(prev => cardIdx < cards.length - 1 ? prev + 1 : 0);
-        // setCardIdx(prev => prev + 1);
+        onCardRated(cardRated)
         setFront(true)
     }
 
@@ -124,12 +141,16 @@ export const LearnView: React.FC<LearnViewProps> = ({ cards, mediumSettings, top
     )
 
     const CardAudio = () => (
-        <View
-            id="audio"
-            style={style.audio}>
+        <TouchableOpacity
+            style={style.audio}
+            onPress={() => textToSpeech(front ? cards[cardIdx].question : cards[cardIdx].answer)}>
+            <View
+                id="audio"
+                style={style.audio}>
 
-            <Text>Play</Text>
-        </View>
+                <Text>Play</Text>
+            </View>
+        </TouchableOpacity>
     )
 
     const mediumMap: { [key in Medium]: React.JSX.Element } = {
@@ -144,6 +165,7 @@ export const LearnView: React.FC<LearnViewProps> = ({ cards, mediumSettings, top
         //     onPress={rateCard}>
 
         <View
+            key="cardRating"
             id="cardRating"
             style={style.rating}>
 
@@ -157,6 +179,7 @@ export const LearnView: React.FC<LearnViewProps> = ({ cards, mediumSettings, top
     )
 
     const getContent = (cardIdx: number) => {
+        if (cards.length < 1) return <Text>nth to learn</Text>
         console.log("getContent")
         let jsx = []
 
@@ -175,7 +198,7 @@ export const LearnView: React.FC<LearnViewProps> = ({ cards, mediumSettings, top
         <>
             <TouchableOpacity
                 onPress={() => { setFront(!front); console.log(cardIdx) }}>
-                <Text>todo: learn stuff </Text>
+                <Text>todo: learn stuff {cardIdx}</Text>
                 {getContent(cardIdx)}
             </TouchableOpacity>
         </>

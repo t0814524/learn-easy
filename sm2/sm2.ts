@@ -21,7 +21,7 @@ export interface Card {
      */
     due: number
 }
-let interval = 1000 * 60 * 2 // 2min //todo: ether hardcode or pass config
+let interval = 1000 * 60 * 1 // 2min //todo: ether hardcode or pass config
 
 export function sm2(card: Card, q: number) {
 
@@ -34,7 +34,7 @@ export function sm2(card: Card, q: number) {
         if (n == 0) i = 1
         else if (n = 1) i = 6
         else i = Math.round(i * ef)
-        card.n++ // increment n
+        n++ // increment n
     } else {
         // incorrect response
         n = 0
@@ -47,8 +47,7 @@ export function sm2(card: Card, q: number) {
     card.n = n
     card.ef = ef
     card.i = i
-
-    card.due = new Date().getTime() + interval;
+    if (q >= 4) card.due = new Date().getTime() + interval; // set new due date only if rating is >=4 
     // card.due.setDate(card.due.getDate() + card.i);
     return card
 }

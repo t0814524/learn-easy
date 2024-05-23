@@ -18,13 +18,8 @@ export const screenHeight = Dimensions.get("window").height || 800
 const style = StyleSheet.create({
     container: {
         flex: 1,
-        // flexDirection: "column",
         minHeight: "100%",
         backgroundColor: 'yellow',
-        // alignItems: 'center',
-        // justifyContent: 'center',
-        // backgroundColor: "#ffe8bf",
-        // width: "100%"
     },
     headerSection: {
         flex: 0.7,
@@ -81,7 +76,7 @@ export interface TopicConfig extends TopicSettings {
      * A number ({@link cardsLearning}) which is the index up to which the cards are currently being lernt.  
      * An array for cardsScheduled can be generated from the currently learnt cards under consideration of the sm2 properties.  
      */
-    cardsLearning: Card[]
+    cardsLearning: (Card & { index: number })[]
     cardsLastAdded?: number
     /**
      * interval in ms in which new cards are added.  
@@ -95,7 +90,7 @@ const TopicConfigDefault: TopicConfig = {
     cardsPerDay: 1,
     mediums: ["img", "text", "audio"],
     // interval: 1000 * 60 * 60 * 24 // 1d
-    interval: 1000 * 60 * 2 // 2min 
+    interval: 1000 * 60 * 1 // 2min 
     // cardsLastAdded: null
 }
 
@@ -175,38 +170,9 @@ export const Layout = () => {
      */
     let [mediumSettings, setMediumSettings] = useState<SettingsParams['mediums']>(["img", "text", "audio"]);
 
-    /**
-     * cards that need to be reviewed  
-     * todo: probably need componentDidMount or some bs here and write to file
-     */
-    let [cardsScheduled, setCardsScheduled] = useState<Card[]>();
-    let [cardsAddedLast, setCardsAddedLast] = useState();
 
-
-    //todo: get config from file, temp config
-    // let config: AppConfig = {
-    //     username: "tobias",
-    //     topics: {
-    //         en_de: { ...TopicConfigDefault }
-    //     }
-    // }
 
     let [topicConfig, setTopicConfig] = useState<TopicConfig>();
-
-    // useEffect(() => {
-    //     let asdf: AppConfig = {
-    //         ...appConfig,
-    //         topics: {
-    //             [topic]: topicConfig
-    //         }
-    //     }
-    //     setAppConfig(asdf)
-    // }, [topicConfig]);
-
-    //todo: test if i need that
-    // useEffect(() => {
-    //     setTopicConfig(config.topics[topic])
-    // }, [topic]);
 
     useEffect(() => {
         EventRegister.addEventListener('toggleMedia', (media) => {
@@ -252,11 +218,31 @@ export const Layout = () => {
                 if (!topic) throw new Error("topic has to be selected before going to learn page"); //todo: make default nullish
 
                 // use config if already assigned (just need to save at some point), else use from config file, else use default
-                console.log("appConfig")
-                console.log(appConfig)
+                // console.log("appConfig")
+                // console.log(appConfig)
+                // console.log(new Date().getTime())
+                // console.log(appConfig.topics.en_de)
 
-                // needed to put that into one thing i think because otherwise it would need useeff to be available which creates a loop or cancel the setstate with return prev which also creates a lopp!!!! fk react
-                // if (!appConfig.topics[topic]) setAppConfig({ ...appConfig, topics: { [topic]: TopicConfigDefault } }) // set default config if no config defined for topic  
+                const onCardRated = (c: Card & { index: number }) => {
+
+                    setAppConfig(prev => {
+                        if (!prev) throw new Error("appConfig has to be set by the time cards are rated.");
+
+                        return {
+                            ...prev,
+                            topics: {
+                                [topic]:
+                                {
+                                    ...prev.topics[topic],
+                                    cardsLearning: prev.topics[topic]?.cardsLearning.map((item, i) =>
+                                        i === c.index ? c : item
+                                    ),
+
+                                }
+                            }
+                        }
+                    })
+                }
 
                 // let interval = 1000 * 60 * 60 * 24 // 1d
                 let interval = appConfig.topics[topic]?.interval || TopicConfigDefault.interval
@@ -274,73 +260,60 @@ export const Layout = () => {
                 let cardsLearning = appConfig.topics[topic]?.cardsLearning ?? TopicConfigDefault.cardsLearning
                 if (!cardsLastAddedTime || (new Date().getTime() - cardsLastAddedTime) > interval) {
 
-                    let topicConfig = appConfig.topics[topic] ?? TopicConfigDefault
+                    // let topicConfig = appConfig.topics[topic] ?? TopicConfigDefault
                     let cardsPerDay = appConfig.topics[topic]?.cardsPerDay ?? TopicConfigDefault.cardsPerDay
                     let newCards = cards.slice(cardsLearning.length, cardsLearning.length + cardsPerDay)
 
 
-                    let conf =
-                    {
-                        ...appConfig, topics: {
-                            [topic]:
-                            {
-                                ...topicConfig,
-                                cardsLearning: cardsLearning.concat(newCards.map(el => ({
-                                    ...el,
-                                    n: 0,
-                                    ef: 2.5,
-                                    i: 0,
-                                    due: new Date().getTime(), //todo: probably sub sth to make sure its added in next review
 
-                                })
-                                )),
+                    setAppConfig(prev => {
+                        return {
+                            ...prev || AppConfigDefault, //idk if that works how i hope (spread default config if no prev, should not happen tho because default values are assigned before)
+                            topics: {
+                                [topic]:
+                                {
+                                    ...prev?.topics[topic],
+                                    cardsLearning: cardsLearning.concat(newCards.map((el, i) => ({
+                                        ...el,
 
-                                cardsLastAdded: new Date().getTime()
+                                        // index to map card to position in json definition file
+                                        index: cardsLearning.length + i,
+
+                                        // sm2
+                                        n: 0,
+                                        ef: 2.5,
+                                        i: 0,
+
+                                        // exact time when added
+                                        due: new Date().getTime(), //todo: probably sub sth to make sure its added in next review
+                                    })
+                                    )),
+
+                                    cardsLastAdded: new Date().getTime()
+                                }
                             }
                         }
-                    }
-                    setAppConfig(conf)
-                    // setAppConfig(prev => {
-                    //     let topicConfig = prev?.topics[topic] ?? TopicConfigDefault
-                    //     cardsLearning = prev?.topics[topic]?.cardsLearning ?? TopicConfigDefault.cardsLearning
-                    //     let cardsPerDay = prev?.topics[topic]?.cardsPerDay ?? TopicConfigDefault.cardsPerDay
-
-                    //     return {
-                    //         ...appConfig, topics: {
-                    //             [topic]:
-                    //             {
-                    //                 ...topicConfig,
-                    //                 cardsLearning: cardsLearning + cardsPerDay,
-                    //                 cardsLastAdded: new Date().getTime()
-                    //             }
-                    //         }
-                    //     }
-                    // })
-
-
-
-
-
-
+                    })
                 }
 
-                console.log("cardsLearning")
-                console.log(cardsLearning)
-                let now = new Date().getTime()
-                // get cards scheduled
-                cardsScheduled = cardsLearning.filter(c => c.due < now)
-                console.log("cardsScheduled")
-                console.log(cardsScheduled)
+
 
                 return <>
                     {
-                        cardsScheduled ?
+                        cardsLearning ?
                             <LearnView
-                                topicConfig={appConfig.topics[topic]}
-                                cards={cardsScheduled}
+                                key="learnView"
+                                onCardRated={onCardRated}
+                                // topicConfig={appConfig.topics[topic]}
+                                // cardsScheduled={appConfig.topics[topic]?.cardsLearning}
+                                cardsLearning={appConfig.topics[topic]?.cardsLearning ?? []}
                                 mediumSettings={mediumSettings}
                             />
-                            : <Text>no cards scheduled rn</Text>
+                            :
+                            <>
+                                <Text>no cards scheduled rn</Text>
+                                <Text>add {appConfig.topics[topic]?.cardsPerDay} cards now todo</Text>
+                            </>
                     }
                 </>
 
