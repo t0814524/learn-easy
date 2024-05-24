@@ -90,7 +90,7 @@ const TopicConfigDefault: TopicConfig = {
     cardsPerDay: 1,
     mediums: ["img", "text", "audio"],
     // interval: 1000 * 60 * 60 * 24 // 1d
-    interval: 1000 * 60 * 1 // 2min 
+    interval: 1000 * 60 * 1 // 1min 
     // cardsLastAdded: null
 }
 
@@ -133,13 +133,6 @@ export const Layout = () => {
             console.log("setAppconfig")
             console.log(config)
             setAppConfig(config ?? AppConfigDefault)
-
-            // if (!config) {
-            //     config = AppConfigDefault
-            //     console.log("got config from default")
-            // }
-            // console.log("got config:")
-            // console.log(config)
         }
         getConfigFromStorage()
     }, []);
@@ -157,6 +150,7 @@ export const Layout = () => {
     //todo: @nelin pls impl setting the topic in home page
     let [topic, setTopic] = useState<Topic>("en_de");
 
+
     const [username, setUsername] = useState(""); //default string shown at start, is replaced by username when set
 
 
@@ -167,12 +161,10 @@ export const Layout = () => {
      * ask: 
      * could be done for front and back but idk if we rlly need that, also the order!?  
      * depends on how much work we want to put in the settings page  
-     */
+    */
     let [mediumSettings, setMediumSettings] = useState<SettingsParams['mediums']>(["img", "text", "audio"]);
 
 
-
-    let [topicConfig, setTopicConfig] = useState<TopicConfig>();
 
     useEffect(() => {
         EventRegister.addEventListener('toggleMedia', (media) => {
@@ -195,15 +187,15 @@ export const Layout = () => {
     }, []);
 
 
-    const Separator = () => <View style={{
-        marginVertical: 8,
-        borderBottomColor: '#737373',
-        borderBottomWidth: StyleSheet.hairlineWidth
-    }} />;
-
     const getMainContent = () => {
         if (!appConfig) throw new Error("app config is required for main content, its checked in render method, rn cant infer it");
 
+        // this is mb not ideal but works for me @emanuel  
+        // default config is used here for topicConfig and merged with actual config, mb better to actually set the appConfig in case of default
+        // you have to use the appConfig in settings and set it with the react set state fn, then it should auto update.. hopefully
+        let topicConfig = {...TopicConfigDefault, ...appConfig.topics[topic] } 
+        console.log('tc')
+        console.log(topicConfig)
         switch (page) {
             case "home":
                 return <HomeView
@@ -211,7 +203,7 @@ export const Layout = () => {
                     username={username}
                 />
             case "settings":
-                return <SettingsView mediums={mediumSettings} cardsPerDay={topicConfig?.cardsPerDay ?? 0} username={username} />
+                return <SettingsView mediums={mediumSettings} cardsPerDay={topicConfig.cardsPerDay ?? 0} username={username} />
             case "learn":
                 console.log("learn in getmaincontentr")
                 // no topic selected, err
@@ -245,30 +237,30 @@ export const Layout = () => {
                 }
 
                 // let interval = 1000 * 60 * 60 * 24 // 1d
-                let interval = appConfig.topics[topic]?.interval || TopicConfigDefault.interval
+                let interval = topicConfig.interval
                 // add new cards if more than 24h since last added or none added yet
                 // ask: do we have/want a progress bar or sth showing how many new cards there are on main page? then this should be done before going to the learn page for all topics
                 console.log("add cards")
-                let cardsLastAddedTime = appConfig?.topics[topic]?.cardsLastAdded
+                let cardsLastAddedTime = topicConfig.cardsLastAdded
                 // let cardsLearning = appConfig?.topics[topic]?.cardsLearning || TopicConfigDefault.cardsLearning
-                // let conf = { ...appConfig }
-
 
                 let cards = cardsImport //todo: use  actual cards for this topic
 
                 // cards learning should be increased 
-                let cardsLearning = appConfig.topics[topic]?.cardsLearning ?? TopicConfigDefault.cardsLearning
+                let cardsLearning = topicConfig.cardsLearning
+
+                console.log(cardsLastAddedTime)
+                console.log(new Date().getTime())
+                console.log(interval)
                 if (!cardsLastAddedTime || (new Date().getTime() - cardsLastAddedTime) > interval) {
 
-                    // let topicConfig = appConfig.topics[topic] ?? TopicConfigDefault
-                    let cardsPerDay = appConfig.topics[topic]?.cardsPerDay ?? TopicConfigDefault.cardsPerDay
+                    let cardsPerDay = topicConfig.cardsPerDay
                     let newCards = cards.slice(cardsLearning.length, cardsLearning.length + cardsPerDay)
-
 
 
                     setAppConfig(prev => {
                         return {
-                            ...prev || AppConfigDefault, //idk if that works how i hope (spread default config if no prev, should not happen tho because default values are assigned before)
+                            ...prev, 
                             topics: {
                                 [topic]:
                                 {
@@ -307,12 +299,13 @@ export const Layout = () => {
                                 // topicConfig={appConfig.topics[topic]}
                                 // cardsScheduled={appConfig.topics[topic]?.cardsLearning}
                                 cardsLearning={appConfig.topics[topic]?.cardsLearning ?? []}
-                                mediumSettings={mediumSettings}
+                                // mediumSettings={appConfig.topics[topic]?.mediums ?? TopicConfigDefault.mediums}
+                                mediumSettings={topicConfig.mediums}
                             />
                             :
                             <>
                                 <Text>no cards scheduled rn</Text>
-                                <Text>add {appConfig.topics[topic]?.cardsPerDay} cards now todo</Text>
+                                <Text>add {topicConfig.cardsPerDay} cards now todo</Text>
                             </>
                     }
                 </>

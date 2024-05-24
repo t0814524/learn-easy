@@ -1,6 +1,5 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image, Dimensions, Button } from "react-native";
 import { AppConfig, Card, Medium, SettingsParams, TopicConfig } from "../Layout";
-import { createEmptyCard, formatDate, fsrs, generatorParameters, Rating, Grades } from 'ts-fsrs';
 import { useState } from "react";
 import { sm2 } from "../../sm2/sm2";
 import { textToSpeech } from "../textToSpeech";
@@ -58,6 +57,8 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
 
     console.log("cardsLearning")
     console.log(cardsLearning)
+    // console.log('mediumSettings')
+    // console.log(mediumSettings)
 
     /**
      * refers to cards scheduled for review  
