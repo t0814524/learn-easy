@@ -2,12 +2,12 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import { FunctionComponent, useEffect, useState } from 'react';
 import CheckBox from 'expo-checkbox';
 import { EventRegister } from 'react-native-event-listeners';
-import { SettingsParams } from "../Layout";
+import { AppConfig, AppConfigInterface, SettingsParams } from "../Layout";
 
 /**
  * Settings view    
  */
-export const SettingsView: FunctionComponent<SettingsParams> = ({ mediums, cardsPerDay, username }) => {
+export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, setConfig}) => {
 
     const [nickname, setNickname] = useState("");
     const [notifications, setNotifications] = useState(true);
@@ -59,14 +59,17 @@ export const SettingsView: FunctionComponent<SettingsParams> = ({ mediums, cards
 
     function determineSettings() {
         //console.log("determineSettings() has been called!");
-        for (let i = 0; i < mediums.length; ++i) {
-            switch (mediums[i]) {
-                case "img": setShowImages(true); break;
-                case "text": setShowText(true); break;
-                case "audio": setShowAudio(true); break;
+        let mediums = config.topics.idktodo?.mediums;
+        if(mediums){
+            for (let i = 0; i < mediums.length; ++i) {
+                switch (mediums[i]) {
+                    case "img": setShowImages(true); break;
+                    case "text": setShowText(true); break;
+                    case "audio": setShowAudio(true); break;
+                }
             }
         }
-        setNickname(username);
+        setNickname(config.username ?? "please enter username here");
     }
 
     function submitNewUsername() {

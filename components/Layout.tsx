@@ -99,6 +99,11 @@ export interface SettingsParams {
     cardsPerDay: number,
 }
 
+export interface AppConfigInterface{
+    config: AppConfig,
+    setConfig: Function,
+}
+
 
 export interface Card extends Sm2Card {
     question: string
@@ -205,7 +210,7 @@ export const Layout = () => {
                     username={username}
                 />
             case "settings":
-                return <SettingsView mediums={mediumSettings} cardsPerDay={topicConfig.cardsPerDay ?? 0} username={username} />
+                return <SettingsView config={appConfig} setConfig={setAppConfig} />
             case "learn":
                 console.log("learn in getmaincontentr")
                 // no topic selected, err

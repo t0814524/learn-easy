@@ -10,7 +10,7 @@ export const saveConfigAsyncStorage = async (config: AppConfig) => {
         // await AsyncStorage.removeItem('config');
         await AsyncStorage.setItem('config', jsonValue);
     } catch (e) {
-        console.error("cant sace Config:")
+        console.error("cant save Config:")
         console.error(e)
     }
 };
