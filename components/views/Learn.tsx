@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image, Dimensions, Button } from "react-native";
-import { AppConfig, Card, Medium, SettingsParams, TopicConfig } from "../Layout";
+import { AppConfig, Card, Medium, TopicConfig  } from "../Layout";
 import { useState } from "react";
 import { sm2 } from "../../sm2/sm2";
 import { textToSpeech } from "../textToSpeech";
@@ -44,7 +44,7 @@ interface LearnViewProps {
     // setCardsScheduled: React.Dispatch<React.SetStateAction<Card[] | undefined>>
     cardsLearning: Card[],
     // setCardsLearning: Card[],
-    mediumSettings: SettingsParams['mediums']
+    mediumSettings: TopicConfig['mediums']
     // topicConfig?: TopicConfig
     onCardRated: (c: Card & { index: number }) => void
 }

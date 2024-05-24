@@ -39,22 +39,12 @@ export type Topic = "en_de" | "geography" | "idktodo"
 export type Medium = "img" | "text" | "audio"
 
 
-
-export interface SettingsParams {
-    username: string,
-    mediums: Medium[],
-    cardsPerDay: number,
-}
 /**
- * @nelin, @emanuel 
- * I d propose sth like that as settings: 
- * idk if this requires changes from u
+ * @emanuel
+ * das is eig nur um die types nicer zu designen aber kannst auch direkt topicconfig verwenden.  
+ * topicconfig is das plus mehr (cardslastadded zb is internal und nicht wichtig fur die settings)  
+ * eig muss alles auf der appConfig basieren dass der state ueberall funktioniert und auch gespeichert wird
  */
-export interface SettingsParams2 {
-    username: string,
-    topics: { [key in Topic]?: TopicSettings }
-}
-
 interface TopicSettings {
     mediums: Medium[],
     /**
@@ -101,6 +91,12 @@ export interface AppConfig {
 
 const AppConfigDefault = {
     topics: {}
+}
+
+export interface SettingsParams {
+    username: string,
+    mediums: Medium[],
+    cardsPerDay: number,
 }
 
 
@@ -159,6 +155,8 @@ export const Layout = () => {
      * 
      * @emanuel 
      * this should not be used, rather use appConfig itself so it gets updated and also written to persistent storage
+     * 
+     * todo: remove that and use appconfig!!!
      * 
      * arr in the order the different mediums should be shown on the cards  
      * 
@@ -275,7 +273,7 @@ export const Layout = () => {
                                         i: 0,
 
                                         // exact time when added
-                                        due: new Date().getTime(), //todo: probably sub sth to make sure its added in next review
+                                        due: new Date().getTime()
                                     })
                                     )),
 
