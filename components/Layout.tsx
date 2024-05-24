@@ -319,7 +319,7 @@ export const Layout = () => {
 
 
             case "statistics":
-                return <StatisticsView />
+                return <StatisticsView mediums={mediumSettings} cardsPerDay={topicConfig?.cardsPerDay ?? 0} username={username} />
 
             default:
                 throw new Error("Illegal page value");
