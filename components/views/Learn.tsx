@@ -1,8 +1,10 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image, Dimensions, Button } from "react-native";
-import { AppConfig, Card, Medium, TopicConfig  } from "../Layout";
-import { useState } from "react";
+import { AppConfig, Card, Medium, TopicConfig } from "../Layout";
+import { useEffect, useState } from "react";
 import { sm2 } from "../../sm2/sm2";
 import { textToSpeech } from "../textToSpeech";
+import { getImg } from "../img";
+import React from "react";
 
 const style = StyleSheet.create({
     img: {
@@ -77,6 +79,7 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
 
 
     let card = cards[cardIdx]
+    let text = front ? card.question : card.answer
 
     const rateCard = (rating: number) => {
         console.log("rate card..")
@@ -100,28 +103,40 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
 
 
     const renderImg = () => {
-
-        if (!card.img) return
-        // throw new Error("no img url");
-
-        let [imgHeight, setimgHeight] = useState<number>(100);
-
+        const origin: "local" | "remote" = "remote"
         const screenWidth = Dimensions.get("window").width || 360 //get screen width or use 360 = avg screen width
 
-        Image.getSize(card.img, (width, height) => {
-            setimgHeight(height * ((screenWidth) / width))
-        })
+        let [imgUrl, setImgUrl] = useState<string>();
+        let [imgHeight, setimgHeight] = useState<number>(100);
 
-        return <Image
+        useEffect(() => {
+            if (origin == "remote")
+                getImg(card.question).then(url => { // card question works nice for en_de (english query results), also front and back should have the same img
+                    setImgUrl(url)
+
+                    Image.getSize(url, (width, height) => {
+                        setimgHeight(height * ((screenWidth) / width))
+                    })
+                })
+            else {
+                if (!card.img) throw new Error("Cant use offline img, no imgUrl found");
+                setImgUrl(card.img)
+            }
+        }, [])
+
+
+
+        return imgUrl ? <Image
             style={{ width: screenWidth, height: imgHeight, resizeMode: "stretch" }}
-            source={{ uri: card.img }}
+            source={{ uri: imgUrl }}
         />
+            : <></>
 
     }
 
 
-    const CardImg = () => (
-        <View
+    const CardImg = React.memo(() => { // todo: prevent rerender here 
+        return <View
             id="img"
             style={style.img}>
 
@@ -129,7 +144,18 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
                 renderImg()
             }
         </View>
-    )
+    });
+    // const CardImg = () => (
+    //     <View
+    //         id="img"
+    //         style={style.img}>
+
+    //         {
+    //             renderImg()
+    //         }
+    //     </View>
+    // )
+
 
     const CardText = () => (
         <View

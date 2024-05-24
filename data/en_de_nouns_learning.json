@@ -2,7 +2,8 @@
     {
         "question": "time",
         "answer": "zeit",
-        "type": "noun"
+        "type": "noun",
+        "img": "https://en.wikipedia.org/wiki/Time#/media/File:MontreGousset001.jpg"
     },
     {
         "question": "person",
