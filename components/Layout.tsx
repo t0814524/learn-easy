@@ -156,6 +156,10 @@ export const Layout = () => {
 
 
     /**
+     * 
+     * @emanuel 
+     * this should not be used, rather use appConfig itself so it gets updated and also written to persistent storage
+     * 
      * arr in the order the different mediums should be shown on the cards  
      * 
      * ask: 
@@ -208,12 +212,6 @@ export const Layout = () => {
                 console.log("learn in getmaincontentr")
                 // no topic selected, err
                 if (!topic) throw new Error("topic has to be selected before going to learn page"); //todo: make default nullish
-
-                // use config if already assigned (just need to save at some point), else use from config file, else use default
-                // console.log("appConfig")
-                // console.log(appConfig)
-                // console.log(new Date().getTime())
-                // console.log(appConfig.topics.en_de)
 
                 const onCardRated = (c: Card & { index: number }) => {
 
