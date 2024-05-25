@@ -93,7 +93,7 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
 
 
     let card = cards[cardIdx]
-    let text = front ? card.question : card.answer
+    // let text = front ? card.question : card.answer
 
     const rateCard = (rating: number) => {
         console.log("rate card..")

@@ -115,12 +115,14 @@ export interface AppConfigInterface {
 }
 
 
-export interface Card extends Sm2Card {
+export interface CardSrc {
     question: string
     answer: string
     img?: string
     sound?: string
 }
+
+type Card = CardSrc & Sm2Card
 
 export type Page = "home" | "learn" | "settings" | "statistics"
 export const Layout = () => {
@@ -203,6 +205,41 @@ export const Layout = () => {
         }
     }, []);
 
+    const [cards, setCards] = useState<CardSrc[]>(); //default string shown at start, is replaced by username when set
+
+    /**
+     * used to dynamically load the cards from json file  
+     * 
+     */
+    const loadCards = async (topic: Topic) => {
+        
+        /**
+         * this would have been nice but its a metro feature to not be able to dynamically import anything but a string, not even const from this map  
+         * might work with some babel presets  
+         */
+        const pathMap2: { [key in Topic]: `../data/${key}.json` } =
+        {
+            en_de: "../data/en_de.json",
+            geography: "../data/geography.json",
+            idktodo: "../data/idktodo.json"
+        }
+
+        const importMap: { [key in Topic]: Promise<CardSrc[]> } =
+        {
+            en_de:  import("../data/en_de.json").then(module => module.default),
+            geography: import("../data/geography.json").then(module => module.default),
+            idktodo: import("../data/idktodo.json").then(module => module.default),
+        }
+        const fileImport = importMap[topic]
+
+        fileImport.then(res => {
+            console.log("loading cards from json file")
+            setCards(res)
+        }).catch(err => {
+            console.error("error loading cards for topic: " + topic)
+            console.error(err)
+        });
+    }
 
     const getMainContent = () => {
         if (!appConfig) throw new Error("app config is required for main content, its checked in render method, rn cant infer it");
@@ -226,8 +263,12 @@ export const Layout = () => {
                 // no topic selected, err
                 if (!topic) throw new Error("topic has to be selected before going to learn page"); //todo: make default nullish
 
-                const onCardRated = (c: Card & { index: number }) => {
+                // if (!cards) // could use that to improve performance but requires cards to be nullish after topic change 
+                loadCards(topic)
 
+                if (!cards) return <Text>loading cards...</Text>
+
+                const onCardRated = (c: Card & { index: number }) => {
                     setAppConfig(prev => {
                         if (!prev) throw new Error("appConfig has to be set by the time cards are rated.");
 
@@ -247,15 +288,12 @@ export const Layout = () => {
                     })
                 }
 
-                // let interval = 1000 * 60 * 60 * 24 // 1d
                 let interval = topicConfig.interval
                 // add new cards if more than 24h since last added or none added yet
                 // ask: do we have/want a progress bar or sth showing how many new cards there are on main page? then this should be done before going to the learn page for all topics
                 console.log("add cards")
                 let cardsLastAddedTime = topicConfig.cardsLastAdded
                 // let cardsLearning = appConfig?.topics[topic]?.cardsLearning || TopicConfigDefault.cardsLearning
-
-                let cards = cardsImport //todo: use  actual cards for this topic
 
                 // cards learning should be increased 
                 let cardsLearning = topicConfig.cardsLearning

@@ -1,0 +1,18 @@
+[
+    {
+        "question": "time",
+        "answer": "zeit",
+        "type": "noun",
+        "img": "https://en.wikipedia.org/wiki/Time#/media/File:MontreGousset001.jpg"
+    },
+    {
+        "question": "person",
+        "answer": "Person",
+        "type": "noun"
+    },
+    {
+        "question": "year",
+        "answer": "Jahr",
+        "type": "noun"
+    }
+]
