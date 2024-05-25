@@ -35,7 +35,17 @@ const style = StyleSheet.create({
 
 })
 
-export type Topic = "en_de" | "geography" | "idktodo"
+/**
+ * available topics  
+ * These are the available topics that can be set as `topic` state var in Layout  
+ *
+ * @nelin 
+ * imo easiest way would be to use this as a list from where the topics on the main page are generated from (if u use setTopic onClick in the list the learn mode starts which already addes the topicconfig and saves it)   
+ * or even better would be to have some ui to select which topics u want to learn (select from `topicsAvailable`) and for these topics add a topicConfig entry in the appConfig, then base the list in the main menu on the topics dict of the appConfig  
+ * */
+const topicsAvailable = ["en_de", "geography", "idktodo"] as const
+export type Topic = typeof topicsAvailable[number]
+// export type Topic = "en_de" | "geography" | "idktodo"
 export type Medium = "img" | "text" | "audio"
 
 
@@ -99,7 +109,7 @@ export interface SettingsParams {
     cardsPerDay: number,
 }
 
-export interface AppConfigInterface{
+export interface AppConfigInterface {
     config: AppConfig,
     setConfig: Function,
 }
@@ -200,7 +210,7 @@ export const Layout = () => {
         // this is mb not ideal but works for me @emanuel  
         // default config is used here for topicConfig and merged with actual config, mb better to actually set the appConfig in case of default
         // you have to use the appConfig in settings and set it with the react set state fn, then it should auto update.. hopefully
-        let topicConfig = {...TopicConfigDefault, ...appConfig.topics[topic] } 
+        let topicConfig = { ...TopicConfigDefault, ...appConfig.topics[topic] }
         console.log('tc')
         console.log(topicConfig)
         switch (page) {
@@ -261,7 +271,7 @@ export const Layout = () => {
 
                     setAppConfig(prev => {
                         return {
-                            ...prev, 
+                            ...prev,
                             topics: {
                                 [topic]:
                                 {

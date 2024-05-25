@@ -1,38 +1,52 @@
-import { Text, View, StyleSheet, TouchableOpacity, Image, Dimensions, Button } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Image, Dimensions, Button, Pressable } from "react-native";
 import { AppConfig, Card, Medium, TopicConfig } from "../Layout";
 import { useEffect, useState } from "react";
 import { sm2 } from "../../sm2/sm2";
 import { textToSpeech } from "../textToSpeech";
 import { getImg } from "../img";
 import React from "react";
+import Icon from "react-native-vector-icons/AntDesign";
 
+const styleText = StyleSheet.create({
+    mid: {
+        fontSize: 33
+    }
+})
 const style = StyleSheet.create({
     img: {
-        // flex: 0.7,
         width: "100%",
-        minHeight: 56, //  https://m3.material.io/components/search/specs
-        backgroundColor: "blue",
-        // flexDirection: "row",
+        minHeight: 56,
     },
     text: {
         flex: 0.7,
         width: "100%",
         minHeight: 56, //  https://m3.material.io/components/search/specs
-        backgroundColor: "blue",
+        // backgroundColor: "blue",
         // flexDirection: "row",
+        fontSize: 33
     },
     audio: {
         flex: 3,
         minHeight: 56,
         // minHeight: "100%",
-        backgroundColor: 'yellow',
+        // backgroundColor: 'yellow',
 
     },
     rating: {
         flex: 1,
+        flexDirection: "row",
         minHeight: 56,
-        backgroundColor: 'green',
-
+        // backgroundColor: 'green',
+    },
+    ratingBtn: {
+        flex: 1,
+        minHeight: 56,
+        backgroundColor: 'orange',
+        borderRadius: 15,
+        borderColor: "black",
+        borderWidth: 1,
+        justifyContent: "center",
+        alignItems: "center"
     }
 })
 
@@ -134,6 +148,11 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
 
     }
 
+    const Separator = () => <View style={{
+        marginVertical: 8,
+        borderBottomColor: '#737373',
+        borderBottomWidth: StyleSheet.hairlineWidth
+    }} />;
 
     const CardImg = React.memo(() => { // todo: prevent rerender here 
         return <View
@@ -162,8 +181,7 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
             id="text"
             style={style.text}>
 
-            <Text>idx:  {cardIdx}</Text>
-            <Text>text {front ? cards[cardIdx].question : cards[cardIdx].answer}</Text>
+            <Text style={styleText.mid}>{front ? cards[cardIdx].question : cards[cardIdx].answer}</Text>
         </View>
     )
 
@@ -175,7 +193,8 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
                 id="audio"
                 style={style.audio}>
 
-                <Text>Play</Text>
+                {/* <Text>Play</Text> */}
+                <Icon name="sound" size={30}></Icon>
             </View>
         </TouchableOpacity>
     )
@@ -187,22 +206,20 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
     }
 
     const CardRating = (
-        // <TouchableOpacity
-        //     key="cardRating"
-        //     onPress={rateCard}>
+        <View key="cardRating">
+            <Separator />
+            <Text key="ratingDesc"> Rate Difficulty</Text>
+            <View
+                id="cardRating"
+                style={style.rating}>
 
-        <View
-            key="cardRating"
-            id="cardRating"
-            style={style.rating}>
-
-            <Text>Rate Difficulty</Text>
-            <Button onPress={() => rateCard(0)} title="Again" />
-            <Button onPress={() => rateCard(2)} title="Hard" />
-            <Button onPress={() => rateCard(3)} title="Good" />
-            <Button onPress={() => rateCard(5)} title="Easy" />
+                <Pressable key="againBtn" style={style.ratingBtn} onPress={() => rateCard(0)}><Text>Again</Text></Pressable>
+                <Pressable key="hardBtn" style={style.ratingBtn} onPress={() => rateCard(2)}><Text>Hard</Text></Pressable>
+                <Pressable key="goodBtn" style={style.ratingBtn} onPress={() => rateCard(3)}><Text>Good</Text></Pressable>
+                <Pressable key="easyBtn" style={style.ratingBtn} onPress={() => rateCard(5)}><Text>Easy</Text></Pressable>
+            </View>
         </View>
-        // </TouchableOpacity>
+
     )
 
     const getContent = (cardIdx: number) => {
@@ -225,7 +242,6 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
         <>
             <TouchableOpacity
                 onPress={() => { setFront(!front); console.log(cardIdx) }}>
-                <Text>todo: learn stuff {cardIdx}</Text>
                 {getContent(cardIdx)}
             </TouchableOpacity>
         </>
