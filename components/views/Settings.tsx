@@ -2,14 +2,17 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import { FunctionComponent, useEffect, useState } from 'react';
 import CheckBox from 'expo-checkbox';
 import { EventRegister } from 'react-native-event-listeners';
-import { AppConfig, AppConfigInterface, Medium, SettingsParams } from "../Layout";
+import { Picker } from '@react-native-picker/picker';
+import { AppConfig, AppConfigInterface, Medium, SettingsParams, Topic, topicsAvailable } from "../Layout";
 
 /**
  * Settings view    
  */
 export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, setConfig}) => {
 
-    const [currentTopic, setCurrentTopic] = useState("");
+    //console.log(config);
+    let currentConfig = config;
+    const [currentTopic, setCurrentTopic] = useState("en_de");
     const [currentMedia, setCurrentMedia] = useState(Array<Medium>());
     const [cardsPerDay, setCardsPerDay] = useState(0);
 
@@ -21,14 +24,28 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
     const [autoplay, setAutoplay] = useState(true);
 
     function saveSettings(mediaArray: Medium[]){
-        let newConfig = {
-            username: nickname,
-            topics: { "en_de": {mediums: mediaArray, cardsPerDay: cardsPerDay, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1},
-                        "geography": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1},
-                        "idktodo": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1}
-                    }
+        switch(currentTopic){
+            case topicsAvailable[0]:{
+                if(currentConfig.topics.en_de){
+                    currentConfig.topics.en_de.mediums = mediaArray;
+                }
+                break;
+            }
+            case topicsAvailable[1]:{
+                if(currentConfig.topics.geography){
+                    currentConfig.topics.geography.mediums = mediaArray;
+                }
+                break;
+            }
+            case topicsAvailable[2]:{
+                if(currentConfig.topics.idktodo){
+                    currentConfig.topics.idktodo.mediums = mediaArray;
+                }
+                break;
+            }
         }
-        setConfig(newConfig);
+        setConfig(currentConfig);
+        determineSettings();
     }
     
     function makeMediaArray(char: string, activated: boolean) {
@@ -74,9 +91,37 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
 
     function determineSettings() {
         console.log("determineSettings() has been called!");
-        console.log(config);
-        let mediums = config.topics.en_de?.mediums;
-        console.log(mediums);
+        console.log(currentConfig);
+        let mediums: Medium[] | undefined;
+        switch(currentTopic){
+            case topicsAvailable[0]:{
+                if(currentConfig.topics.en_de && currentConfig.topics.en_de.mediums){
+                    mediums = currentConfig.topics.en_de!.mediums;
+                    console.log("en_de-media: "+mediums);
+                }
+                break;
+            }
+            case topicsAvailable[1]:{
+                if(currentConfig.topics.geography && currentConfig.topics.geography.mediums){
+                    mediums = currentConfig.topics.geography!.mediums;
+                    console.log("geography-media: "+mediums);
+                }
+                break;
+            }
+            case topicsAvailable[2]:{
+                if(currentConfig.topics.idktodo && currentConfig.topics.idktodo.mediums){
+                    mediums = currentConfig.topics.idktodo!.mediums;
+                    console.log("idktodo-media: "+mediums);
+                }
+                break;
+            }
+        }
+        //console.log(mediums);
+        //reset checkboxes:
+        setShowImages(false);
+        setShowText(false);
+        setShowAudio(false);
+        //set checkboxes:
         if(mediums){
             for (let i = 0; i < mediums.length; ++i) {
                 switch (mediums[i]) {
@@ -86,10 +131,7 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
                 }
             }
         }
-        setNickname(config.username ?? "");
-        setCurrentTopic("en_de");
-        setCurrentMedia(config.topics.en_de?.mediums ?? ["img","text"]);
-        setCardsPerDay(config.topics.en_de?.cardsPerDay ?? 42);
+        setNickname(currentConfig.username ?? "");
     }
 
     function submitNewUsername() {
@@ -100,6 +142,13 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
     useEffect(() => {
         determineSettings();
     }, [])
+
+    // on value change of currentTopic: show settings for that topic!
+    useEffect(() => {
+        console.log("currentTopic=="+currentTopic);
+        determineSettings();
+        //console.log("currentTopic=="+currentTopic);
+    }, [currentTopic])
 
     return (
         <View style={styles.mainContainer}>
@@ -126,6 +175,16 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
             </View>
             <Text style={styles.title}>Media</Text>
             <View style={styles.subContainer}>
+            <Picker
+                selectedValue={currentTopic}
+                onValueChange={(itemValue, itemIndex) => {
+                    setCurrentTopic(itemValue); 
+                }}
+            >
+                <Picker.Item label="English" value="en_de" />
+                <Picker.Item label="Geography" value="geography" />
+                <Picker.Item label="History" value="idktodo" />
+            </Picker>
                 <View style={styles.checkboxContainer}>
                     <Text style={styles.inputText}>Show Images:</Text>
                     <CheckBox

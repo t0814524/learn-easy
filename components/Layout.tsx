@@ -43,7 +43,7 @@ const style = StyleSheet.create({
  * imo easiest way would be to use this as a list from where the topics on the main page are generated from (if u use setTopic onClick in the list the learn mode starts which already addes the topicconfig and saves it)   
  * or even better would be to have some ui to select which topics u want to learn (select from `topicsAvailable`) and for these topics add a topicConfig entry in the appConfig, then base the list in the main menu on the topics dict of the appConfig  
  * */
-const topicsAvailable = ["en_de", "geography", "idktodo"] as const
+export const topicsAvailable = ["en_de", "geography", "idktodo"] as const
 export type Topic = typeof topicsAvailable[number]
 // export type Topic = "en_de" | "geography" | "idktodo"
 export type Medium = "img" | "text" | "audio"
@@ -144,31 +144,35 @@ export const Layout = () => {
      */
     const saveConfig = (config: AppConfig) => {
         if (appConfig) {
-            console.log("saving config")
+            console.log("saving config");
+            console.log(config);
             // setAppConfig(config)
-            saveConfigAsyncStorage(config)
+            saveConfigAsyncStorage(config);
         }
     }
     useEffect(() => {
         console.log("empty eff")
+        console.log("first=="+first);
         if(first){
             setAppConfig(appConfigStartValue);
             first = false;
         }
         else{
         const getConfigFromStorage = async () => {
-            const config = await getConfigAsyncStorage()
-            console.log("setAppconfig")
-            console.log(config)
-            setAppConfig(config ?? AppConfigDefault)
+            const config = await getConfigAsyncStorage();
+            console.log("setAppconfig");
+            console.log(config);
+            setAppConfig(config ?? AppConfigDefault);
         }
-        getConfigFromStorage()
+        getConfigFromStorage();
         }
     }, []);
 
     useEffect(() => {
         console.log("appconfig effect")
-        if (appConfig) saveConfig(appConfig)
+        if (appConfig){
+            saveConfig(appConfig);
+        }
     }, [appConfig]);
 
 
