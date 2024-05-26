@@ -103,6 +103,14 @@ const AppConfigDefault = {
     topics: {}
 }
 
+const appConfigStartValue = {
+    username: "",
+    topics: { "en_de": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1},
+                "geography": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1},
+                "idktodo": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1}
+            }
+}
+
 export interface SettingsParams {
     username: string,
     mediums: Medium[],
@@ -126,6 +134,8 @@ type Card = CardSrc & Sm2Card
 
 export type Page = "home" | "learn" | "settings" | "statistics"
 export const Layout = () => {
+
+    let first: boolean = true; // flag for startup
     let [appConfig, setAppConfig] = useState<AppConfig>();
 
     /**
@@ -141,6 +151,11 @@ export const Layout = () => {
     }
     useEffect(() => {
         console.log("empty eff")
+        if(first){
+            setAppConfig(appConfigStartValue);
+            first = false;
+        }
+        else{
         const getConfigFromStorage = async () => {
             const config = await getConfigAsyncStorage()
             console.log("setAppconfig")
@@ -148,6 +163,7 @@ export const Layout = () => {
             setAppConfig(config ?? AppConfigDefault)
         }
         getConfigFromStorage()
+        }
     }, []);
 
     useEffect(() => {
@@ -248,8 +264,8 @@ export const Layout = () => {
         // default config is used here for topicConfig and merged with actual config, mb better to actually set the appConfig in case of default
         // you have to use the appConfig in settings and set it with the react set state fn, then it should auto update.. hopefully
         let topicConfig = { ...TopicConfigDefault, ...appConfig.topics[topic] }
-        console.log('tc')
-        console.log(topicConfig)
+        //console.log('tc')
+        //console.log(topicConfig)
         switch (page) {
             case "home":
                 return <HomeView

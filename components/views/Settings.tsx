@@ -2,12 +2,16 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import { FunctionComponent, useEffect, useState } from 'react';
 import CheckBox from 'expo-checkbox';
 import { EventRegister } from 'react-native-event-listeners';
-import { AppConfig, AppConfigInterface, SettingsParams } from "../Layout";
+import { AppConfig, AppConfigInterface, Medium, SettingsParams } from "../Layout";
 
 /**
  * Settings view    
  */
 export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, setConfig}) => {
+
+    const [currentTopic, setCurrentTopic] = useState("");
+    const [currentMedia, setCurrentMedia] = useState(Array<Medium>());
+    const [cardsPerDay, setCardsPerDay] = useState(0);
 
     const [nickname, setNickname] = useState("");
     const [notifications, setNotifications] = useState(true);
@@ -16,8 +20,19 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
     const [showAudio, setShowAudio] = useState(false);
     const [autoplay, setAutoplay] = useState(true);
 
+    function saveSettings(mediaArray: Medium[]){
+        let newConfig = {
+            username: nickname,
+            topics: { "en_de": {mediums: mediaArray, cardsPerDay: cardsPerDay, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1},
+                        "geography": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1},
+                        "idktodo": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1}
+                    }
+        }
+        setConfig(newConfig);
+    }
+    
     function makeMediaArray(char: string, activated: boolean) {
-        let array = new Array<string>();
+        let array = new Array<Medium>();
         switch (char) {
             case 'i': {
                 activated ? array = array.concat("img") : {};
@@ -44,22 +59,24 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
 
     function toggleShowImages(newValue: boolean) {
         setShowImages(newValue);
-        EventRegister.emit('toggleMedia', makeMediaArray('i', newValue));
+        saveSettings(makeMediaArray('i', newValue));
     }
 
     function toggleShowText(newValue: boolean) {
         setShowText(newValue);
-        EventRegister.emit('toggleMedia', makeMediaArray('t', newValue));
+        saveSettings(makeMediaArray('t', newValue));
     }
 
     function toggleShowAudio(newValue: boolean) {
         setShowAudio(newValue);
-        EventRegister.emit('toggleMedia', makeMediaArray('a', newValue));
+        saveSettings(makeMediaArray('a', newValue));
     }
 
     function determineSettings() {
-        //console.log("determineSettings() has been called!");
-        let mediums = config.topics.idktodo?.mediums;
+        console.log("determineSettings() has been called!");
+        console.log(config);
+        let mediums = config.topics.en_de?.mediums;
+        console.log(mediums);
         if(mediums){
             for (let i = 0; i < mediums.length; ++i) {
                 switch (mediums[i]) {
@@ -69,7 +86,10 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
                 }
             }
         }
-        setNickname(config.username ?? "please enter username here");
+        setNickname(config.username ?? "");
+        setCurrentTopic("en_de");
+        setCurrentMedia(config.topics.en_de?.mediums ?? ["img","text"]);
+        setCardsPerDay(config.topics.en_de?.cardsPerDay ?? 42);
     }
 
     function submitNewUsername() {
