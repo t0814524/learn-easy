@@ -232,7 +232,7 @@ export const Layout = () => {
      * 
      */
     const loadCards = async (topic: Topic) => {
-        
+
         /**
          * this would have been nice but its a metro feature to not be able to dynamically import anything but a string, not even const from this map  
          * might work with some babel presets  
@@ -246,7 +246,7 @@ export const Layout = () => {
 
         const importMap: { [key in Topic]: Promise<CardSrc[]> } =
         {
-            en_de:  import("../data/en_de.json").then(module => module.default),
+            en_de: import("../data/en_de.json").then(module => module.default),
             geography: import("../data/geography.json").then(module => module.default),
             idktodo: import("../data/idktodo.json").then(module => module.default),
         }
@@ -295,6 +295,7 @@ export const Layout = () => {
                         return {
                             ...prev,
                             topics: {
+                                ...prev.topics,
                                 [topic]:
                                 {
                                     ...prev.topics[topic],
@@ -331,6 +332,7 @@ export const Layout = () => {
                         return {
                             ...prev,
                             topics: {
+                                ...prev?.topics,
                                 [topic]:
                                 {
                                     ...prev?.topics[topic],
