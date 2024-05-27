@@ -184,6 +184,8 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
                 <Picker.Item label="English" value="en_de" />
                 <Picker.Item label="Geography" value="geography" />
                 <Picker.Item label="History" value="idktodo" />
+                <Picker.Item label="Italian" value="idktodo" />
+                <Picker.Item label="Spanish" value="idktodo" />
             </Picker>
                 <View style={styles.checkboxContainer}>
                     <Text style={styles.inputText}>Show Images:</Text>
@@ -262,6 +264,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#d2d2d2',
         padding: 10,
         borderRadius: 5,
+        paddingBottom: 300,
     },
     rowContainer: {
         flexDirection: 'row',

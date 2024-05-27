@@ -9,9 +9,9 @@ export default class Scoreboard extends Component {
       tableHead: ['Rank', 'user', 'progress'],
       tableData: [
         ['#1', 'you', '47%'],
-        ['#2', 'friend#1', '32%'],
-        ['#3', 'friend#2', '31%'],
-        ['#4', 'friend#3', '2%']
+        ['#2', 'frenemy1', '32%'],
+        ['#3', 'frenemy2', '31%'],
+        ['#4', 'frenemy3', '2%']
       ]
     }
   }
@@ -32,7 +32,7 @@ export default class Scoreboard extends Component {
 
     return (
       <View style={styles.container}>
-        <Text style={{color: 'white', fontSize: 16, fontWeight: 'bold', paddingBottom: 10}}>Scoreboard:</Text>
+        <Text style={{color: 'white', fontSize: 16, fontWeight: 'bold', paddingBottom: 10}}>Your Rank:</Text>
         <Table borderStyle={{borderColor: 'transparent'}}>
           <Row data={state.tableHead} style={styles.head} textStyle={styles.text}/>
           {

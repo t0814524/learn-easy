@@ -24,11 +24,11 @@ class StatCategory{
  */
 export const StatisticsView: FunctionComponent<SettingsParams> = ({ mediums, cardsPerDay, username }) => {
     
-    let title = "Your Stats:";
+    let title = "Your Progress:";
     let learned = new StatCategory("learned", 47, "#93FCF8", "#3BE9DE");
-    let learning = new StatCategory("learning", 30, "#009FFF", "#006DFF");
-    let relearn = new StatCategory("relearn", 20, "#BDB2FA", "#8F80F3");
-    let todo = new StatCategory("todo", 3, "#FFA5BA", "#FF7F97");
+    let learning = new StatCategory("learning", 20, "#009FFF", "#006DFF");
+    let relearn = new StatCategory("relearn", 10, "#BDB2FA", "#8F80F3");
+    let todo = new StatCategory("todo", 23, "#FFA5BA", "#FF7F97");
 
     const pieData = [
         {
