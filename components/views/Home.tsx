@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, TouchableOpacity, StyleSheet, View, ScrollView } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { Page } from "../Layout";
+import { Page, Topic } from "../Layout"; // Import Topic type from Layout
 
 const styles = StyleSheet.create({
     scrollContainer: {
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
 });
 
 export const HomeView: React.FC<{
-    setPage: (page: Page, topic?: string) => void,
+    setPage: (page: Page, topic?: Topic) => void, // Change the type of topic parameter to Topic
     username: string,
 }> = ({ setPage, username }) => {
     const welcomeMessage = username ? `Welcome to Learn Easy, ${username}!` : "Welcome to Learn Easy!";
@@ -113,10 +113,10 @@ export const HomeView: React.FC<{
                     <View style={styles.topicBox}>
                         {["italian", "spanish", "french"].map((topic) => (
                             <View key={topic} style={styles.topicContainer}>
-                                <TouchableOpacity onPress={() => { setPage("learn", topic) }} style={styles.topic}>
+                                <TouchableOpacity onPress={() => { setPage("learn", topic as Topic) }} style={styles.topic}>
                                     <Text style={styles.topicText}>{topic.charAt(0).toUpperCase() + topic.slice(1)}</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => { setPage("statistics") }} style={styles.settingsButton}>
+                                <TouchableOpacity onPress={() => { setPage("statistics", topic as Topic) }} style={styles.settingsButton}>
                                     <FontAwesome name="gear" size={20} color="black" />
                                 </TouchableOpacity>
                             </View>
@@ -132,7 +132,7 @@ export const HomeView: React.FC<{
                             <TouchableOpacity onPress={() => { setPage("learn", "geography") }} style={styles.topic}>
                                 <Text style={styles.topicText}>Geography</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => { setPage("statistics") }} style={styles.settingsButton}>
+                            <TouchableOpacity onPress={() => { setPage("statistics", "geography") }} style={styles.settingsButton}>
                                 <FontAwesome name="gear" size={20} color="black" />
                             </TouchableOpacity>
                         </View>
@@ -147,7 +147,7 @@ export const HomeView: React.FC<{
                             <TouchableOpacity onPress={() => { setPage("learn", "history") }} style={styles.topic}>
                                 <Text style={styles.topicText}>History</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => { setPage("statistics") }} style={styles.settingsButton}>
+                            <TouchableOpacity onPress={() => { setPage("statistics", "history") }} style={styles.settingsButton}>
                                 <FontAwesome name="gear" size={20} color="black" />
                             </TouchableOpacity>
                         </View>

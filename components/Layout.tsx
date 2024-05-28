@@ -6,7 +6,8 @@ import { StatisticsView } from "./views/Statistics";
 import { LearnView } from "./views/Learn";
 import { SettingsView } from "./views/Settings";
 import { HomeView } from "./views/Home";
-import cardsImport from "../data/en_de_nouns_learning.json";
+//import cardsImport from "../data/en_de_nouns_learning.json";
+import cardsImport from "../data/temp/en_de_learning.json";
 import { getConfigAsyncStorage, saveConfigAsyncStorage } from "./saveJson";
 import { Card as Sm2Card } from "../sm2/sm2";
 
@@ -43,7 +44,7 @@ const style = StyleSheet.create({
  * imo easiest way would be to use this as a list from where the topics on the main page are generated from (if u use setTopic onClick in the list the learn mode starts which already addes the topicconfig and saves it)   
  * or even better would be to have some ui to select which topics u want to learn (select from `topicsAvailable`) and for these topics add a topicConfig entry in the appConfig, then base the list in the main menu on the topics dict of the appConfig  
  * */
-const topicsAvailable = ["en_de", "geography", "idktodo"] as const
+const topicsAvailable = ["en_de", "geography", "idktodo", "italian", "spanish", "french", "history"] as const
 export type Topic = typeof topicsAvailable[number]
 // export type Topic = "en_de" | "geography" | "idktodo"
 export type Medium = "img" | "text" | "audio"
@@ -217,29 +218,32 @@ export const Layout = () => {
          * this would have been nice but its a metro feature to not be able to dynamically import anything but a string, not even const from this map  
          * might work with some babel presets  
          */
-        const pathMap2: { [key in Topic]: `../data/${key}.json` } =
-        {
-            en_de: "../data/en_de.json",
-            geography: "../data/geography.json",
-            idktodo: "../data/idktodo.json"
-        }
-
-        const importMap: { [key in Topic]: Promise<CardSrc[]> } =
-        {
+        /* const pathMap2: { [key in Topic]: `../data/${key}.json` } =
+         {
+             en_de: "../data/en_de.json",
+             geography: "../data/geography.json",
+             idktodo: "../data/idktodo.json"
+         }
+ */
+        const importMap: { [key in Topic]: Promise<CardSrc[]> } = {
             en_de: import("../data/en_de.json").then(module => module.default),
             geography: import("../data/geography.json").then(module => module.default),
             idktodo: import("../data/idktodo.json").then(module => module.default),
-        }
-        const fileImport = importMap[topic]
+            italian: import("../data/italian.json").then(module => module.default),
+            spanish: import("../data/spanish.json").then(module => module.default),
+            french: import("../data/french.json").then(module => module.default),
+            history: import("../data/history.json").then(module => module.default),
+        };
+        const fileImport = importMap[topic];
 
         fileImport.then(res => {
-            console.log("loading cards from json file")
-            setCards(res)
+            console.log("loading cards from json file for topic:", topic);
+            setCards(res);
         }).catch(err => {
-            console.error("error loading cards for topic: " + topic)
-            console.error(err)
+            console.error("error loading cards for topic:", topic);
+            console.error(err);
         });
-    }
+    };
 
     const getMainContent = () => {
         if (!appConfig) throw new Error("app config is required for main content, its checked in render method, rn cant infer it");
@@ -253,17 +257,27 @@ export const Layout = () => {
         switch (page) {
             case "home":
                 return <HomeView
-                    setPage={setPage}
+                    setPage={(page, topic) => {
+                        if (topic) {
+                            setTopic(topic as Topic);
+                            setAppConfig(prev => ({
+                                ...prev,
+                                topics: {
+                                    ...prev?.topics,
+                                    [topic]: prev?.topics[topic] ?? TopicConfigDefault
+                                }
+                            }));
+                        }
+                        setPage(page);
+                    }}
                     username={username}
                 />
             case "settings":
                 return <SettingsView config={appConfig} setConfig={setAppConfig} />
             case "learn":
                 console.log("learn in getmaincontentr")
-                // no topic selected, err
                 if (!topic) throw new Error("topic has to be selected before going to learn page"); //todo: make default nullish
 
-                // if (!cards) // could use that to improve performance but requires cards to be nullish after topic change 
                 loadCards(topic)
 
                 if (!cards) return <Text>loading cards...</Text>
@@ -276,18 +290,17 @@ export const Layout = () => {
                             ...prev,
                             topics: {
                                 ...prev.topics,
-                                [topic]:
-                                {
+                                [topic]: {
                                     ...prev.topics[topic],
                                     cardsLearning: prev.topics[topic]?.cardsLearning.map((item, i) =>
                                         i === c.index ? c : item
                                     ),
-
                                 }
                             }
                         }
                     })
                 }
+
 
                 let interval = topicConfig.interval
                 // add new cards if more than 24h since last added or none added yet
