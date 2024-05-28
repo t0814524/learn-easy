@@ -1,7 +1,9 @@
 import React from "react";
 import { Text, TouchableOpacity, StyleSheet, View, ScrollView } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { Page, Topic } from "../Layout"; // Import Topic type from Layout
+import { Page } from "../Layout";
+import { styles } from "../style";
+
 
 const styles = StyleSheet.create({
     scrollContainer: {
