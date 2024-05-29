@@ -6,6 +6,7 @@ import { styles } from "../style";
 
 
 
+
 export const HomeView: React.FC<{
     setPage: (page: Page, topic?: Topic) => void, // Change the type of topic parameter to Topic
     username: string,
