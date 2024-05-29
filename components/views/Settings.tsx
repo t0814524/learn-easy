@@ -93,10 +93,12 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
         console.log("determineSettings() has been called!");
         console.log(currentConfig);
         let mediums: Medium[] | undefined;
+        let cardsPerDay: number = 0;
         switch(currentTopic){
             case topicsAvailable[0]:{
                 if(currentConfig.topics.en_de && currentConfig.topics.en_de.mediums){
                     mediums = currentConfig.topics.en_de!.mediums;
+                    cardsPerDay = currentConfig.topics.en_de!.cardsPerDay;
                     console.log("en_de-media: "+mediums);
                 }
                 break;
@@ -104,6 +106,7 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
             case topicsAvailable[1]:{
                 if(currentConfig.topics.geography && currentConfig.topics.geography.mediums){
                     mediums = currentConfig.topics.geography!.mediums;
+                    cardsPerDay = currentConfig.topics.geography!.cardsPerDay;
                     console.log("geography-media: "+mediums);
                 }
                 break;
@@ -111,6 +114,7 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
             case topicsAvailable[2]:{
                 if(currentConfig.topics.idktodo && currentConfig.topics.idktodo.mediums){
                     mediums = currentConfig.topics.idktodo!.mediums;
+                    cardsPerDay = currentConfig.topics.idktodo!.cardsPerDay;
                     console.log("idktodo-media: "+mediums);
                 }
                 break;
@@ -132,6 +136,7 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
             }
         }
         setNickname(currentConfig.username ?? "");
+        setCardsPerDay(cardsPerDay);
     }
 
     function submitNewUsername() {
@@ -195,14 +200,14 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
                         onValueChange={() => toggleShowImages(!showImages)}
                     />
                 </View>
-                <View style={styles.checkboxContainer}>
+                {/*<View style={styles.checkboxContainer}>
                     <Text style={styles.inputText}>Show Text:</Text>
                     <CheckBox
-                        disabled={false}
+                        disabled={true}
                         value={showText}
                         onValueChange={() => toggleShowText(!showText)}
                     />
-                </View>
+                </View>*/}
                 <View style={styles.checkboxContainer}>
                     <Text style={styles.inputText}>Show Audio:</Text>
                     <CheckBox
@@ -211,12 +216,22 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
                         onValueChange={() => toggleShowAudio(!showAudio)}
                     />
                 </View>
-                <View style={styles.checkboxContainer}>
-                    <Text style={styles.inputText}>Autoplay:</Text>
+                <View style={styles.checkboxContainerAutoplay}>
+                    <Text style={styles.inputTextAutoplay}>Autoplay Audio:</Text>
                     <CheckBox
                         disabled={false}
                         value={autoplay}
                         onValueChange={(newValue) => setAutoplay(newValue)}
+                    />
+                </View>
+                <View style={styles.rowContainer}>
+                    <Text style={styles.inputText}>Cards per Day:</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(value) => setCardsPerDay(Number(value))}
+                        onSubmitEditing={() => {}}
+                        placeholder="xxx"
+                        value={String(cardsPerDay)}
                     />
                 </View>
             </View>
@@ -239,6 +254,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: 20,
+        marginLeft: 32,
+        marginRight: 64,
+        marginBottom: 10,
+    },
+    checkboxContainerAutoplay: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 5,
         marginLeft: 64,
         marginRight: 64,
         marginBottom: 10,
@@ -257,6 +281,12 @@ const styles = StyleSheet.create({
     inputText: {
         fontSize: 16,
         fontWeight: 'bold',
+        marginRight: 10,
+    },
+    inputTextAutoplay: {
+        color: '#212f3d',
+        fontSize: 14,
+        fontWeight: 'regular',
         marginRight: 10,
     },
     mainContainer: {
