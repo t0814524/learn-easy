@@ -8,6 +8,7 @@ import { SettingsView } from "./views/Settings";
 import { HomeView } from "./views/Home";
 import { getConfigAsyncStorage, saveConfigAsyncStorage } from "./saveJson";
 import { Card as Sm2Card } from "../sm2/sm2";
+import { TopicConfigDefault, topicsAvailable } from "./constants";
 
 
 export const screenWidth = Dimensions.get("window").width || 360 //get screen width or use 360 = avg screen width
@@ -34,15 +35,6 @@ const style = StyleSheet.create({
 
 })
 
-/**
- * available topics  
- * These are the available topics that can be set as `topic` state var in Layout  
- *
- * @nelin 
- * imo easiest way would be to use this as a list from where the topics on the main page are generated from (if u use setTopic onClick in the list the learn mode starts which already addes the topicconfig and saves it)   
- * or even better would be to have some ui to select which topics u want to learn (select from `topicsAvailable`) and for these topics add a topicConfig entry in the appConfig, then base the list in the main menu on the topics dict of the appConfig  
- * */
-export const topicsAvailable = ["en_de", "geography", "italian", "spanish", "french", "history"] as const
 export type Topic = typeof topicsAvailable[number]
 
 export type Medium = "img" | "text" | "audio"
@@ -75,13 +67,6 @@ export interface TopicConfig extends TopicSettings {
      * default should be 1 day but 1 min is helpful for testing
      */
     interval: number
-}
-
-export const TopicConfigDefault: TopicConfig = {
-    cardsLearning: [],
-    cardsPerDay: 1,
-    mediums: ["img", "text", "audio"],
-    interval: 1000 * 60 * 1 // 1min 
 }
 
 export interface AppConfig {

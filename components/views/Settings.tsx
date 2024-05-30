@@ -2,7 +2,9 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useState } from 'react';
 import CheckBox from 'expo-checkbox';
 import { Picker } from '@react-native-picker/picker';
-import { AppConfig, Medium, Topic, TopicConfig, TopicConfigDefault, topicsAvailable } from "../Layout";
+import { AppConfig, Medium, Topic } from "../Layout";
+import { TopicConfigDefault, topicsAvailable } from "../constants";
+
 
 
 export interface SettingsViewProps {

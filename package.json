@@ -17,7 +17,6 @@
     "expo-status-bar": "~1.12.1",
     "react": "18.2.0",
     "react-native": "0.74.1",
-    "react-native-event-listeners": "^1.0.7",
     "react-native-gifted-charts": "^1.4.10",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-svg": "^15.3.0",
