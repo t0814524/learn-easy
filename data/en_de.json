@@ -1,7 +1,7 @@
 [
     {
         "question": "time",
-        "answer": "zeit",
+        "answer": "Zeit",
         "type": "noun",
         "img": "https://en.wikipedia.org/wiki/Time#/media/File:MontreGousset001.jpg"
     },
@@ -13,6 +13,16 @@
     {
         "question": "year",
         "answer": "Jahr",
+        "type": "noun"
+    },
+    {
+        "question": "elephant",
+        "answer": "Elefant",
+        "type": "noun"
+    },
+    {
+        "question": "monkey",
+        "answer": "Affe",
         "type": "noun"
     }
 ]

@@ -2,5 +2,21 @@
   {
     "question": "Who was the first President of the United States?",
     "answer": "George Washington"
+  },
+  {
+    "question": "Which year did the Storming of the Bastille happen?",
+    "answer": "1789"
+  },
+  {
+    "question": "When was the first electric tram put into operation?",
+    "answer": "1881"
+  },
+  {
+    "question": "The Charter of the United Nations was signed by 50 countries in ..?",
+    "answer": "1945"
+  },
+  {
+    "question": "When did the CERN directorate released the source code of WorldWideWeb into the public domain?",
+    "answer": "1993"
   }
 ]

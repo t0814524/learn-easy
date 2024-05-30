@@ -4,11 +4,19 @@
     "answer": "Mela"
   },
   {
-    "question": "apple2",
-    "answer": "Mela2"
+    "question": "traffic light",
+    "answer": "semaforo"
   },
   {
-    "question": "apple3",
-    "answer": "Mela3"
+    "question": "strawberry",
+    "answer": "fragola"
+  },
+  {
+    "question": "orange",
+    "answer": "arancia"
+  },
+  {
+    "question": "horse",
+    "answer": "cavallo"
   }
 ]
