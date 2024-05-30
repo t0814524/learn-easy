@@ -205,8 +205,15 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
 
     )
 
-    const getContent = (cardIdx: number) => {
-        if (cards.length < 1) return <Text>nth to learn</Text>
+    const getContent = () => {
+        if (cards.length < 1) {
+            return <>
+                <View style={{ marginTop: 20 }} />
+                <Text style={styleCommon.instructionText}>No cards scheduled. </Text>
+                <Text style={styleCommon.instructionText}> You have learned all your cards for today!</Text>
+            </>
+        }
+
         console.log("getContent")
         let jsx = []
 
