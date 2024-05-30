@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { View, StyleSheet, SafeAreaView, Dimensions, Button, Text } from "react-native";
-import { EventRegister } from 'react-native-event-listeners';
 import { Header } from "./Header";
 import { StatisticsView } from "./views/Statistics";
 import { LearnView } from "./views/Learn";
