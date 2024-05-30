@@ -123,7 +123,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                             })
                         }}
                         onSubmitEditing={() => { }}
-                        placeholder="xxx"
+                        placeholder="number"
                         value={String(tc?.cardsPerDay)}
                     />
                 </View>
