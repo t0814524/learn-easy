@@ -65,35 +65,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
 
         return (
             <>
-                <View style={styles.checkboxContainer}>
-                    <Text style={styles.inputText}>Show Images:</Text>
-                    <CheckBox
-                        value={img}
-                        onValueChange={() => setMediaType("img")}
-                    />
-                </View>
-                <View style={styles.checkboxContainer}>
-                    <Text style={styles.inputText}>Show Text:</Text>
-                    <CheckBox
-                        value={text}
-                        onValueChange={() => setMediaType("text")}
-                    />
-                </View>
-                <View style={styles.checkboxContainer}>
-                    <Text style={styles.inputText}>Show Audio:</Text>
-                    <CheckBox
-                        value={audio}
-                        onValueChange={() => setMediaType("audio")}
-                    />
-                </View>
-                {/* <View style={styles.checkboxContainerAutoplay}>
-                    <Text style={styles.inputTextAutoplay}>Autoplay Audio:</Text>
-                    <CheckBox
-                    disabled={false}
-                    value={autoplay}
-                    onValueChange={(newValue) => setAutoplay(newValue)}
-                    />
-                </View> */}
                 <View style={styles.rowContainer}>
                     <Text style={styles.inputText}>Cards per Day:</Text>
                     <TextInput
@@ -125,6 +96,36 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                         value={String(tc?.cardsPerDay)}
                     />
                 </View>
+                <View style={styles.checkboxContainer}>
+                    <Text style={styles.inputText}>Show Images:</Text>
+                    <CheckBox
+                        value={img}
+                        onValueChange={() => setMediaType("img")}
+                    />
+                </View>
+                <View style={styles.checkboxContainer}>
+                    <Text style={styles.inputText}>Show Text:</Text>
+                    <CheckBox
+                        value={text}
+                        onValueChange={() => setMediaType("text")}
+                    />
+                </View>
+                <View style={styles.checkboxContainer}>
+                    <Text style={styles.inputText}>Show Audio:</Text>
+                    <CheckBox
+                        value={audio}
+                        onValueChange={() => setMediaType("audio")}
+                    />
+                </View>
+                {/* <View style={styles.checkboxContainerAutoplay}>
+                    <Text style={styles.inputTextAutoplay}>Autoplay Audio:</Text>
+                    <CheckBox
+                    disabled={false}
+                    value={autoplay}
+                    onValueChange={(newValue) => setAutoplay(newValue)}
+                    />
+                </View> */}
+                
             </>
         )
     }
@@ -157,7 +158,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                 </View>
             </View>
             <Text style={styles.title}>Learn Content</Text>
-            <View style={{ ...styles.subContainer, ...{ minHeight: Dimensions.get("window").height || 800 } }}>
+            <View style={{ ...styles.subContainer, ...{ minHeight: Dimensions.get("window").height/2.5 || 800 } }}>
                 <Picker
                     selectedValue={topic}
                     onValueChange={(itemValue) => {
