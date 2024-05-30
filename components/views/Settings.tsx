@@ -227,11 +227,10 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     mainContainer: {
-        marginHorizontal: 20,
         backgroundColor: '#0b5345',
         padding: 10,
-        borderRadius: 5,
         paddingBottom: 300,
+        minWidth: Dimensions.get("window").width || 800
     },
     rowContainer: {
         flexDirection: 'row',
