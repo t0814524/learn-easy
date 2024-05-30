@@ -28,7 +28,7 @@ class StatCategory {
 export const StatisticsView: FunctionComponent<SettingsParams> = ({ mediums, cardsPerDay, username }) => {
 
   let title = "Your Progress:";
-  let learned = new StatCategory("learned", 47, "#93FCF8", "#3BE9DE");
+  let learned = new StatCategory("learned", 47, "#2ecc71", "#3BE9DE");
   let learning = new StatCategory("learning", 20, "#009FFF", "#006DFF");
   let relearn = new StatCategory("relearn", 10, "#BDB2FA", "#8F80F3");
   let todo = new StatCategory("todo", 23, "#FFA5BA", "#FF7F97");
@@ -109,7 +109,7 @@ export const StatisticsView: FunctionComponent<SettingsParams> = ({ mediums, car
     <View
       style={{
         paddingVertical: 20,
-        backgroundColor: '#34448B',
+        backgroundColor: '#FFF',
         flex: 1,
       }}>
       <View
@@ -117,7 +117,7 @@ export const StatisticsView: FunctionComponent<SettingsParams> = ({ mediums, car
           margin: 20,
           padding: 16,
           borderRadius: 20,
-          backgroundColor: '#232B5D',
+          backgroundColor: '#0b5345',
         }}>
         <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
           {title}
@@ -130,7 +130,7 @@ export const StatisticsView: FunctionComponent<SettingsParams> = ({ mediums, car
             sectionAutoFocus
             radius={90}
             innerRadius={60}
-            innerCircleColor={'#232B5D'}
+            innerCircleColor={'#0b5345'}
             centerLabelComponent={() => {
               return (
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>

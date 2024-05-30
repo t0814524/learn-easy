@@ -31,7 +31,7 @@ export const HomeView: React.FC<{
                                     <Text style={styles.topicText}>{topic.charAt(0).toUpperCase() + topic.slice(1)}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => { setPage("statistics", topic as Topic) }} style={styles.settingsButton}>
-                                    <FontAwesome name="gear" size={20} color="black" />
+                                    <FontAwesome name="bar-chart" size={20} color="black" />
                                 </TouchableOpacity>
                             </View>
                         ))}
@@ -47,7 +47,7 @@ export const HomeView: React.FC<{
                                 <Text style={styles.topicText}>Geography</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => { setPage("statistics", "geography") }} style={styles.settingsButton}>
-                                <FontAwesome name="gear" size={20} color="black" />
+                                <FontAwesome name="bar-chart" size={20} color="black" />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -62,7 +62,7 @@ export const HomeView: React.FC<{
                                 <Text style={styles.topicText}>History</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => { setPage("statistics", "history") }} style={styles.settingsButton}>
-                                <FontAwesome name="gear" size={20} color="black" />
+                                <FontAwesome name="bar-chart" size={20} color="black" />
                             </TouchableOpacity>
                         </View>
                     </View>

@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     },
     mainContainer: {
         marginHorizontal: 20,
-        backgroundColor: '#d2d2d2',
+        backgroundColor: '#0b5345',
         padding: 10,
         borderRadius: 5,
         paddingBottom: 300,
@@ -223,11 +223,12 @@ const styles = StyleSheet.create({
     },
     subContainer: {
         marginHorizontal: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#FFF',
         padding: 20,
         borderRadius: 5,
     },
     title: {
+        color: '#FFF',
         fontSize: 16,
         textAlign: 'center',
         fontWeight: 'bold',

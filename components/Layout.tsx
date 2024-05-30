@@ -18,18 +18,18 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
         minHeight: "100%",
-        backgroundColor: 'yellow',
+        backgroundColor: '#138d75',
     },
     headerSection: {
         flex: 0.7,
         width: "100%",
         minHeight: 56, //  https://m3.material.io/components/search/specs
-        backgroundColor: "#59A9FC",
+        backgroundColor: "#2ecc71",
         flexDirection: "row",
     },
     mainSection: {
         flex: 10,
-        backgroundColor: "#F8DDFD"
+        backgroundColor: "#FFF"
     }
 
 })

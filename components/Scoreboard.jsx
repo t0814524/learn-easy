@@ -53,8 +53,8 @@ export default class Scoreboard extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#232B5D' },
-  head: { height: 40, backgroundColor: '#808B97' },
+  container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#0b5345' },
+  head: { height: 40, backgroundColor: '#138d75' },
   text: { margin: 6 },
   row: { flexDirection: 'row', backgroundColor: '#FFFFFF' },
   btn: { width: 58, height: 18, backgroundColor: '#78B7BB',  borderRadius: 2 },

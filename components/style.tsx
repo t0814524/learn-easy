@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
         marginVertical: 10,
         padding: 15,
         borderRadius: 10,
-        backgroundColor: "#B8FBFC",
+        backgroundColor: "#138d75",
         alignItems: "center",
     },
     topicContainer: {
@@ -66,7 +66,7 @@ export const styles = StyleSheet.create({
         justifyContent: "center",
         // position: "relative",
         borderRadius: 5,
-        backgroundColor: "#58B9FA",
+        backgroundColor: "#2ecc71",
         borderWidth: 1,
         borderColor: "black",
         padding: 10,
