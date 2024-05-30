@@ -23,7 +23,7 @@ export const HomeView: React.FC<{
 
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionHeader}>Languages</Text>
-                    <Text style={styles.sectionDescription}>Learn vocabulary for German, Italian, Spanish, and French.</Text>
+                    <Text style={styles.sectionDescription}>Learn German, Italian, Spanish, and French.</Text>
                     <View style={styles.topicBox}>
                         {["german", "italian", "spanish", "french"].map((topic) => (
                             <View key={topic} style={styles.topicContainer}>
@@ -40,7 +40,7 @@ export const HomeView: React.FC<{
 
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionHeader}>Geography</Text>
-                    <Text style={styles.sectionDescription}>Learn about world geography, countries, capitals, and more.</Text>
+                    <Text style={styles.sectionDescription}>Learn countries' capitals.</Text>
                     <View style={styles.topicBox}>
                         <View style={styles.topicContainer}>
                             <TouchableOpacity onPress={() => { setPage("learn", "geography") }} style={styles.topic}>
