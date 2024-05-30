@@ -69,6 +69,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                     <Text style={styles.inputText}>Cards per Day:</Text>
                     <TextInput
                         style={styles.input}
+                        keyboardType="numeric"
                         onChangeText={val => {
                             if (isNaN(Number(val))) {
                                 console.error("value provided for cardsPerDay is not a number")
@@ -125,7 +126,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                     onValueChange={(newValue) => setAutoplay(newValue)}
                     />
                 </View> */}
-                
+
             </>
         )
     }
@@ -158,7 +159,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                 </View>
             </View>
             <Text style={styles.title}>Learn Content</Text>
-            <View style={{ ...styles.subContainer, ...{ minHeight: Dimensions.get("window").height/2.5 || 800 } }}>
+            <View style={{ ...styles.subContainer, ...{ marginBottom: Dimensions.get("window").height / 2.5 || 800 } }}>
                 <Picker
                     selectedValue={topic}
                     onValueChange={(itemValue) => {
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     input: {
         height: 40,
@@ -230,8 +231,7 @@ const styles = StyleSheet.create({
     mainContainer: {
         backgroundColor: '#0b5345',
         padding: 10,
-        paddingBottom: 300,
-        minWidth: Dimensions.get("window").width || 800
+        minWidth: Dimensions.get("window").width,
     },
     rowContainer: {
         flexDirection: 'row',

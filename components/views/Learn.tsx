@@ -234,7 +234,7 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
                 <TouchableOpacity
                     style={style.container}
                     onPress={() => { setFront(!front); console.log(cardIdx) }}>
-                    {getContent(cardIdx)}
+                    {getContent()}
                 </TouchableOpacity>
             </ScrollView>
         </>
