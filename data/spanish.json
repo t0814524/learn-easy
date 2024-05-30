@@ -18,5 +18,25 @@
   {
     "question": "horse",
     "answer": "Caballo"
+  },
+  {
+    "question": "handcuffs",
+    "answer": "Esposas"
+  },
+  {
+    "question": "travel",
+    "answer": "Viajar"
+  },
+  {
+    "question": "pistol (gun)",
+    "answer": "Pistola"
+  },
+  {
+    "question": "rocket (space travel)",
+    "answer": "Cohete"
+  },
+  {
+    "question": "calculator",
+    "answer": "Calculadora"
   }
 ]

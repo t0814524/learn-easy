@@ -18,5 +18,26 @@
     {
         "question": "France",
         "answer": "Paris"
+    },
+    {
+        "question": "United States",
+        "answer": "Washington D.C."
+    },
+    {
+        "question": "Argentina",
+        "answer": "Buenos Aires"
+    },
+    {
+        "question": "Bolivia",
+        "answer": "Sucre"
+    },
+    {
+        "question": "Tanzania",
+        "answer": "Dodoma"
+    },
+    {
+        "question": "Japan",
+        "answer": "Tokyo"
     }
+
 ]

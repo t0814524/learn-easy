@@ -24,5 +24,25 @@
         "question": "monkey",
         "answer": "Affe",
         "type": "noun"
-    }
+    },
+    {
+        "question": "handcuffs",
+        "answer": "Handschellen"
+      },
+      {
+        "question": "travel",
+        "answer": "Reise"
+      },
+      {
+        "question": "pistol (gun)",
+        "answer": "Pistole"
+      },
+      {
+        "question": "rocket (space travel)",
+        "answer": "Rakete"
+      },
+      {
+        "question": "calculator",
+        "answer": "Rechner"
+      }
 ]

@@ -18,5 +18,25 @@
   {
     "question": "piano player",
     "answer": "Pianiste"
+  },
+  {
+    "question": "handcuffs",
+    "answer": "Menottes"
+  },
+  {
+    "question": "travel",
+    "answer": "Voyage"
+  },
+  {
+    "question": "pistol (gun)",
+    "answer": "Pistolet"
+  },
+  {
+    "question": "rocket (space travel)",
+    "answer": "Fusée"
+  },
+  {
+    "question": "calculator (pocket calculator)",
+    "answer": "Calculatrice (de poche)"
   }
 ]
