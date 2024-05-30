@@ -1,5 +1,5 @@
-import { Text, View, ScrollView, StyleSheet, TouchableOpacity, Image, Dimensions, Button, Pressable } from "react-native";
-import { AppConfig, Card, Medium, TopicConfig } from "../Layout";
+import { Text, View, StyleSheet, TouchableOpacity, Image, Dimensions, Pressable, ScrollView } from "react-native";
+import { Card, Medium, TopicConfig } from "../Layout";
 import { useEffect, useState } from "react";
 import { sm2 } from "../../sm2/sm2";
 import { textToSpeech } from "../textToSpeech";
@@ -235,7 +235,7 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
 
     return (
         <>
-            
+
             <ScrollView>
                 <TouchableOpacity
                     style={style.container}

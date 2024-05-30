@@ -18,7 +18,7 @@ const style = StyleSheet.create({
     },
     pageInfoContainer: {
         flex: 4,
-        backgroundColor: "#d9a9ff",
+        backgroundColor: "#e4cce8",
         alignItems: "center",
         justifyContent: "center",
     }
