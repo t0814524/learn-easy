@@ -246,6 +246,7 @@ export const Layout = () => {
                                 onCardRated={onCardRated}
                                 cardsLearning={appConfig.topics[topic]?.cardsLearning ?? []}
                                 mediumSettings={topicConfig.mediums}
+                                interval={interval}
                             />
                             :
                             <>

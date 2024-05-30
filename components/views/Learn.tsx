@@ -64,12 +64,13 @@ interface LearnViewProps {
     cardsLearning: Card[],
     mediumSettings: TopicConfig['mediums']
     onCardRated: (c: Card & { index: number }) => void
+    interval: number
 }
 
 /**
  * Learn View  
  */
-export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated, mediumSettings }) => {
+export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated, mediumSettings, interval }) => {
 
     let cards = cardsLearning.filter(c => c.due < new Date().getTime()).sort((a: Card, b: Card) => a.due - b.due) // sort by due date
 
@@ -83,7 +84,7 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
         console.log("rate card..")
 
         //deep clone rn to check state
-        let cardRated = sm2(JSON.parse(JSON.stringify(card)), rating) as Card & { index: number }
+        let cardRated = sm2(JSON.parse(JSON.stringify(card)), rating, interval) as Card & { index: number }
 
         //ask again if < 4 according to sm2 spec
         if (rating >= 4) {
