@@ -21,12 +21,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
 
     const TopicSettings = () => {
         let tc = { ...TopicConfigDefault, ...appConfig.topics[topic] }
-        /**
-         * always the same order  
-         * from {@link TopicConfigDefault}:   
-         * mediums: ["img", "text", "audio"],  
-         * 
-         */
         let mediaConfig = tc?.mediums || TopicConfigDefault.mediums
 
         let img = mediaConfig.includes("img")
@@ -49,7 +43,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                 case ("audio"):
                     audio = !audio
                     break;
-                case ("audio"):
+                case ("text"):
                     text = !text
                     break;
             }
