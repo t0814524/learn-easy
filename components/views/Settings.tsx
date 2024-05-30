@@ -156,7 +156,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                     />
                 </View>
             </View>
-            <Text style={styles.title}>Media</Text>
+            <Text style={styles.title}>Learn Content</Text>
             <View style={{ ...styles.subContainer, ...{ minHeight: Dimensions.get("window").height || 800 } }}>
                 <Picker
                     selectedValue={topic}
