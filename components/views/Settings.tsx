@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useState } from 'react';
 import CheckBox from 'expo-checkbox';
 import { Picker } from '@react-native-picker/picker';
@@ -99,7 +99,29 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                     <Text style={styles.inputText}>Cards per Day:</Text>
                     <TextInput
                         style={styles.input}
-                        // onChangeText={(value) => setCardsPerDay(Number(value))}
+                        onChangeText={val => {
+                            if (isNaN(Number(val))) {
+                                console.error("value provided for cardsPerDay is not a number")
+                                Alert.alert(
+                                    'Invalid Input for Cards per Day',
+                                    'Please enter a number',
+                                    [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+                                    { cancelable: false }
+                                );
+                            }
+                            setAppConfig(prev => {
+                                return {
+                                    ...prev,
+                                    topics: {
+                                        ...prev.topics,
+                                        [topic]: {
+                                            ...prev.topics[topic],
+                                            cardsPerDay: val
+                                        }
+                                    }
+                                }
+                            })
+                        }}
                         onSubmitEditing={() => { }}
                         placeholder="xxx"
                         value={String(tc?.cardsPerDay)}
@@ -142,7 +164,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
             <View style={styles.subContainer}>
                 <Picker
                     selectedValue={topic}
-                    onValueChange={(itemValue, itemIndex) => {
+                    onValueChange={(itemValue) => {
                         setTopic(itemValue);
                     }}
                 >
