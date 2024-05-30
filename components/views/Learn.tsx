@@ -64,27 +64,18 @@ interface LearnViewProps {
     cardsLearning: Card[],
     mediumSettings: TopicConfig['mediums']
     onCardRated: (c: Card & { index: number }) => void
+    interval: number
 }
 
 /**
  * Learn View  
  */
-export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated, mediumSettings }) => {
-    console.log("LearnView")
+export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated, mediumSettings, interval }) => {
 
-    /**
-     * refers to cards scheduled for review  
-     * i put that in here because of state sync issues but i can move it up now probably if required for statistics / progress  
-    */
     let cards = cardsLearning.filter(c => c.due < new Date().getTime()).sort((a: Card, b: Card) => a.due - b.due) // sort by due date
-
-    // console.log("cards sorted")
-    // console.log(cards)
-
 
     let [cardIdx, setCardIdx] = useState(0);
     let [front, setFront] = useState(true);
-
 
     let card = cards[cardIdx]
     // let text = front ? card.question : card.answer
@@ -92,15 +83,12 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
     const rateCard = (rating: number) => {
         console.log("rate card..")
 
-        //deep clone rn to check state bs
-        let cardRated = sm2(JSON.parse(JSON.stringify(card)), rating) as Card & { index: number }
+        //deep clone rn to check state
+        let cardRated = sm2(JSON.parse(JSON.stringify(card)), rating, interval) as Card & { index: number }
 
         //ask again if < 4 according to sm2 spec
         if (rating >= 4) {
-            // cards.pop()
-            console.log("call onCardRated")
-            // setCardIdx(prev => prev == 0 ? cards.length - 1 : prev - 1)
-            if (cardIdx == cards.length - 1) setCardIdx(0) // idk about these conditions, might be easier to use a stack and unshift 
+            if (cardIdx == cards.length - 1) setCardIdx(0)
         } else {
             // only increment index if no card was removed
             setCardIdx(prev => cardIdx < cards.length - 1 ? prev + 1 : 0);
@@ -235,7 +223,6 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
 
     return (
         <>
-
             <ScrollView>
                 <TouchableOpacity
                     style={style.container}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, SafeAreaView, Dimensions, Button, Text } from "react-native";
+import { View, StyleSheet, SafeAreaView, Dimensions, Text } from "react-native";
 import { Header } from "./Header";
 import { StatisticsView } from "./views/Statistics";
 import { LearnView } from "./views/Learn";
@@ -155,8 +155,7 @@ export const Layout = () => {
 
     const getMainContent = () => {
         if (!appConfig) throw new Error("app config is required for main content, its checked in render method, rn cant infer it");
-        console.log("page")
-        console.log(page)
+
         switch (page) {
             case "home":
                 return <HomeView
@@ -167,18 +166,12 @@ export const Layout = () => {
                     username={appConfig.username}
                 />
             case "settings":
-                console.log("setttttings")
                 return <SettingsView appConfig={appConfig} setAppConfig={setAppConfig} />
             case "learn":
-                console.log("learn in getmaincontentr")
                 if (!topic) throw new Error("topic has to be selected before going to learn page");
 
                 let topicConfig = { ...TopicConfigDefault, ...appConfig.topics[topic] }
-                console.log('tc')
-                console.log(topicConfig)
 
-
-                // if (!cards) return <Text>No cards available</Text>;
                 const onCardRated = (c: Card & { index: number }) => {
                     setAppConfig(prev => {
                         if (!prev) throw new Error("appConfig has to be set by the time cards are rated.");
@@ -207,7 +200,6 @@ export const Layout = () => {
 
                 // new cards should be added: 
                 if (!cardsLastAddedTime || (new Date().getTime() - cardsLastAddedTime) > interval) {
-                    console.log("add new cards")
 
                     loadCards(topic).then((cards: CardSrc[]) => {
                         let cardsPerDay = topicConfig.cardsPerDay
@@ -254,11 +246,11 @@ export const Layout = () => {
                                 onCardRated={onCardRated}
                                 cardsLearning={appConfig.topics[topic]?.cardsLearning ?? []}
                                 mediumSettings={topicConfig.mediums}
+                                interval={interval}
                             />
                             :
                             <>
-                                <Text>no cards scheduled rn</Text>
-                                <Text>add {topicConfig.cardsPerDay} cards now todo</Text>
+                                <Text>no cards scheduled. You learnt all your cards for today!</Text>
                             </>
                     }
                 </>

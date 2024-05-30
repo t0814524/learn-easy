@@ -21,9 +21,8 @@ export interface Card {
      */
     due: number
 }
-let interval = 1000 * 60 * 1 // 2min //todo: ether hardcode or pass config
 
-export function sm2(card: Card, q: number) {
+export function sm2(card: Card, q: number, interval: number) {
 
     if (q < 0 || q > 5) throw new Error("invalid grade!");
     let n = card.n
