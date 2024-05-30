@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TouchableOpacity, Image, Dimensions, Button, Pressable } from "react-native";
+import { Text, View, ScrollView, StyleSheet, TouchableOpacity, Image, Dimensions, Button, Pressable } from "react-native";
 import { AppConfig, Card, Medium, TopicConfig } from "../Layout";
 import { useEffect, useState } from "react";
 import { sm2 } from "../../sm2/sm2";
@@ -235,11 +235,14 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
 
     return (
         <>
-            <TouchableOpacity
-                style={style.container}
-                onPress={() => { setFront(!front); console.log(cardIdx) }}>
-                {getContent(cardIdx)}
-            </TouchableOpacity>
+            
+            <ScrollView>
+                <TouchableOpacity
+                    style={style.container}
+                    onPress={() => { setFront(!front); console.log(cardIdx) }}>
+                    {getContent(cardIdx)}
+                </TouchableOpacity>
+            </ScrollView>
         </>
     );
 };
