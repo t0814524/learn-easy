@@ -9,7 +9,7 @@ import { TopicConfig } from "./Layout"
  * available topics  
  * These are the available topics that can be set as `topic` state var in Layout  
  */
-export const topicsAvailable = ["en_de", "geography", "italian", "spanish", "french", "history"] as const
+export const topicsAvailable = ["german", "geography", "italian", "spanish", "french", "history"] as const
 
 export const TopicConfigDefault: TopicConfig = {
     cardsLearning: [],

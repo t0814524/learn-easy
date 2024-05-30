@@ -1,7 +1,6 @@
 import { Text, View } from "react-native";
 import { FunctionComponent } from 'react';
 import { PieChart } from "react-native-gifted-charts";
-import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import Scoreboard from "../Scoreboard";
 import { Medium } from "../Layout";
 export interface SettingsParams {

@@ -23,9 +23,9 @@ export const HomeView: React.FC<{
 
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionHeader}>Languages</Text>
-                    <Text style={styles.sectionDescription}>Learn vocabulary for English, Italian, Spanish, and French.</Text>
+                    <Text style={styles.sectionDescription}>Learn vocabulary for German, Italian, Spanish, and French.</Text>
                     <View style={styles.topicBox}>
-                        {["en_de", "italian", "spanish", "french"].map((topic) => (
+                        {["german", "italian", "spanish", "french"].map((topic) => (
                             <View key={topic} style={styles.topicContainer}>
                                 <TouchableOpacity onPress={() => { setPage("learn", topic as Topic) }} style={styles.topic}>
                                     <Text style={styles.topicText}>{topic.charAt(0).toUpperCase() + topic.slice(1)}</Text>

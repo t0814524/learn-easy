@@ -143,7 +143,7 @@ export const Layout = () => {
  */
 
         const importMap: { [key in Topic]: Promise<CardSrc[]> } = {
-            en_de: import("../data/en_de.json").then(module => module.default),
+            german: import("../data/en_de.json").then(module => module.default),
             geography: import("../data/geography.json").then(module => module.default),
             italian: import("../data/italian.json").then(module => module.default),
             spanish: import("../data/spanish.json").then(module => module.default),
