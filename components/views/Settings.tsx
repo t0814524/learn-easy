@@ -121,7 +121,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                                 }
                             })
                         }}
-                        placeholder="xxx"
+                        placeholder="number"
                         value={String(tc?.cardsPerDay)}
                     />
                 </View>
