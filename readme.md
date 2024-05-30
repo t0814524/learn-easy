@@ -1,6 +1,6 @@
 ## Readme - M3
 
-* Gruppe:	[2]
+* Gruppe:	2
 * Team-Nr.: 205
 * Projektthema: Learn Easy
 
@@ -11,7 +11,7 @@ Framework:	[React Native Android]
 API-Version:	[Android 11.0 ("R")]
 
 GerÃ¤t(e), auf dem(denen) getestet wurde:
-[Hardware: iPhone 13 mini (expo), Virtual: Pixel 3a]
+[Hardware: iPhone 13 mini (expo) + Sony Xperia 5 III XQ-BQ52 (expo), Virtual: Pixel 3a]
 
 Externe Libraries und Frameworks:
 [
@@ -36,6 +36,8 @@ Externe Libraries und Frameworks:
 Dauer der Entwicklung:
 [
  Tobias Schort: 40 Stunden,
+ Emanuel Soellinger: 25 Stunden,
+ Nelin Dogu: 10 Stunden
 ]
 
 Weitere Anmerkungen:
