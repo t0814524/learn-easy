@@ -58,15 +58,11 @@ const style = StyleSheet.create({
 
 interface LearnViewProps {
     /**
-     * cards scheduled for review  
+     * cards currently learnt  
+     * get filtered and sorted by due date in {@link LearnView}
      */
-    // cardsScheduled: Card[],
-    // appConfig: AppConfig
-    // setCardsScheduled: React.Dispatch<React.SetStateAction<Card[] | undefined>>
     cardsLearning: Card[],
-    // setCardsLearning: Card[],
     mediumSettings: TopicConfig['mediums']
-    // topicConfig?: TopicConfig
     onCardRated: (c: Card & { index: number }) => void
 }
 
@@ -74,23 +70,16 @@ interface LearnViewProps {
  * Learn View  
  */
 export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated, mediumSettings }) => {
-    console.log("cards in LearnView")
-
-    console.log("cardsLearning")
-    console.log(cardsLearning)
-    // console.log('mediumSettings')
-    // console.log(mediumSettings)
+    console.log("LearnView")
 
     /**
      * refers to cards scheduled for review  
      * i put that in here because of state sync issues but i can move it up now probably if required for statistics / progress  
-     */
-    let cards = cardsLearning.filter(c => c.due < new Date().getTime()).sort((a: Card, b: Card) => b.due - a.due) // sort by due date
+    */
+    let cards = cardsLearning.filter(c => c.due < new Date().getTime()).sort((a: Card, b: Card) => a.due - b.due) // sort by due date
 
-    // console.log(new Date().getTime())
-    // console.log("cards scheduled")
+    // console.log("cards sorted")
     // console.log(cards)
-    // console.log(new Date().getTime())
 
 
     let [cardIdx, setCardIdx] = useState(0);

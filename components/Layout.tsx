@@ -103,14 +103,6 @@ export const AppConfigDefault = {
     topics: {}
 }
 
-const appConfigStartValue = {
-    username: "",
-    topics: {
-        "en_de": { mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1 },
-        "geography": { mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1 },
-        "idktodo": { mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1 }
-    }
-}
 
 export interface SettingsParams {
     username: string,
@@ -166,15 +158,9 @@ export const Layout = () => {
     }, [appConfig]);
 
 
-
-
     let [page, setPage] = useState<Page>("home");
 
     let [topic, setTopic] = useState<Topic>();
-
-
-    const [username, setUsername] = useState(""); //default string shown at start, is replaced by username when set
-
 
 
     /**
@@ -201,16 +187,6 @@ export const Layout = () => {
         });
         return () => {
             EventRegister.removeEventListener('toggleMedia');
-        }
-    }, []);
-
-    useEffect(() => {
-        EventRegister.addEventListener('submitUsername', (username) => {
-            console.log("new username == " + username);
-            setUsername(username);
-        });
-        return () => {
-            EventRegister.removeEventListener('submitUsername');
         }
     }, []);
 
@@ -257,7 +233,7 @@ export const Layout = () => {
                         setTopic(topic)
                         setPage(page);
                     }}
-                    username={username}
+                    username={appConfig.username}
                 />
             case "settings":
                 console.log("setttttings")
@@ -370,7 +346,7 @@ export const Layout = () => {
 
             case "statistics":
                 if (!topic) throw new Error("topic has to be selected before going to statistics page");
-                return <StatisticsView mediums={mediumSettings} cardsPerDay={appConfig.topics[topic]?.cardsPerDay ?? 0} username={username} />
+                return <StatisticsView mediums={mediumSettings} cardsPerDay={appConfig.topics[topic]?.cardsPerDay ?? 0} username={appConfig.username} />
 
             default:
                 throw new Error("Illegal page value");

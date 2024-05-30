@@ -1,14 +1,14 @@
 import React from "react";
 import { Text, TouchableOpacity, StyleSheet, View, ScrollView } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { Page } from "../Layout";
+import { Page, Topic } from "../Layout";
 import { styles } from "../style";
 
 
 
 export const HomeView: React.FC<{
     setPage: (page: Page, topic?: Topic) => void, // Change the type of topic parameter to Topic
-    username: string,
+    username?: string,
 }> = ({ setPage, username }) => {
     const welcomeMessage = username ? `Welcome to Learn Easy, ${username}!` : "Welcome to Learn Easy!";
 
