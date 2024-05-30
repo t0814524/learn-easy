@@ -6,47 +6,52 @@ import { textToSpeech } from "../textToSpeech";
 import { getImg } from "../img";
 import React from "react";
 import Icon from "react-native-vector-icons/AntDesign";
+import styleCommon from "../style";
+
 
 const styleText = StyleSheet.create({
     mid: {
-        fontSize: 33
+        fontSize: 40
     }
 })
 const style = StyleSheet.create({
+    container: {
+        width: "100%",
+        minHeight: 56,
+    },
     img: {
         width: "100%",
         minHeight: 56,
     },
     text: {
+        margin: 4,
         flex: 0.7,
         width: "100%",
-        minHeight: 56, //  https://m3.material.io/components/search/specs
-        // backgroundColor: "blue",
-        // flexDirection: "row",
-        fontSize: 33
+        minHeight: 56,
     },
     audio: {
+        margin: 5,
         flex: 3,
         minHeight: 56,
-        // minHeight: "100%",
-        // backgroundColor: 'yellow',
-
     },
     rating: {
         flex: 1,
+        minHeight: 56,
+    },
+    ratingContainer: {
+        flex: 1,
         flexDirection: "row",
         minHeight: 56,
-        // backgroundColor: 'green',
+        margin: 10
+    },
+    againBtn: {
+        flex: 1,
+        minHeight: 56,
+
     },
     ratingBtn: {
         flex: 1,
         minHeight: 56,
-        backgroundColor: 'orange',
-        borderRadius: 15,
-        borderColor: "black",
-        borderWidth: 1,
-        justifyContent: "center",
-        alignItems: "center"
     }
 })
 
@@ -206,17 +211,18 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
     }
 
     const CardRating = (
-        <View key="cardRating">
+        <View key="cardRating"
+            id="cardRating"
+            style={style.rating}>
             <Separator />
             <Text key="ratingDesc"> Rate Difficulty</Text>
-            <View
-                id="cardRating"
-                style={style.rating}>
-
-                <Pressable key="againBtn" style={style.ratingBtn} onPress={() => rateCard(0)}><Text>Again</Text></Pressable>
-                <Pressable key="hardBtn" style={style.ratingBtn} onPress={() => rateCard(2)}><Text>Hard</Text></Pressable>
-                <Pressable key="goodBtn" style={style.ratingBtn} onPress={() => rateCard(3)}><Text>Good</Text></Pressable>
-                <Pressable key="easyBtn" style={style.ratingBtn} onPress={() => rateCard(5)}><Text>Easy</Text></Pressable>
+            <View style={style.ratingContainer}>
+                <Pressable key="againBtn" style={{ ...styleCommon.topicContainer, ...style.againBtn }} onPress={() => rateCard(0)}><Text>Again</Text></Pressable>
+            </View>
+            <View style={style.ratingContainer}>
+                <Pressable key="hardBtn" style={{ ...styleCommon.topicContainer, ...style.ratingBtn }} onPress={() => rateCard(2)}><Text>Hard</Text></Pressable>
+                <Pressable key="goodBtn" style={{ ...styleCommon.topicContainer, ...style.ratingBtn }} onPress={() => rateCard(3)}><Text>Good</Text></Pressable>
+                <Pressable key="easyBtn" style={{ ...styleCommon.topicContainer, ...style.ratingBtn }} onPress={() => rateCard(5)}><Text>Easy</Text></Pressable>
             </View>
         </View>
 
@@ -241,6 +247,7 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
     return (
         <>
             <TouchableOpacity
+                style={style.container}
                 onPress={() => { setFront(!front); console.log(cardIdx) }}>
                 {getContent(cardIdx)}
             </TouchableOpacity>
