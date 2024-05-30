@@ -44,7 +44,8 @@ const style = StyleSheet.create({
  * imo easiest way would be to use this as a list from where the topics on the main page are generated from (if u use setTopic onClick in the list the learn mode starts which already addes the topicconfig and saves it)   
  * or even better would be to have some ui to select which topics u want to learn (select from `topicsAvailable`) and for these topics add a topicConfig entry in the appConfig, then base the list in the main menu on the topics dict of the appConfig  
  * */
-const topicsAvailable = ["en_de", "geography", "idktodo", "italian", "spanish", "french", "history"] as const
+export const topicsAvailable = ["en_de", "geography", "idktodo"] as const
+
 export type Topic = typeof topicsAvailable[number]
 // export type Topic = "en_de" | "geography" | "idktodo"
 export type Medium = "img" | "text" | "audio"
@@ -104,6 +105,14 @@ const AppConfigDefault = {
     topics: {}
 }
 
+const appConfigStartValue = {
+    username: "",
+    topics: { "en_de": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1},
+                "geography": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1},
+                "idktodo": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1}
+            }
+}
+
 export interface SettingsParams {
     username: string,
     mediums: Medium[],
@@ -127,6 +136,8 @@ type Card = CardSrc & Sm2Card
 
 export type Page = "home" | "learn" | "settings" | "statistics"
 export const Layout = () => {
+
+    let first: boolean = true; // flag for startup
     let [appConfig, setAppConfig] = useState<AppConfig>();
 
     /**
@@ -135,25 +146,35 @@ export const Layout = () => {
      */
     const saveConfig = (config: AppConfig) => {
         if (appConfig) {
-            console.log("saving config")
+            console.log("saving config");
+            console.log(config);
             // setAppConfig(config)
-            saveConfigAsyncStorage(config)
+            saveConfigAsyncStorage(config);
         }
     }
     useEffect(() => {
         console.log("empty eff")
-        const getConfigFromStorage = async () => {
-            const config = await getConfigAsyncStorage()
-            console.log("setAppconfig")
-            console.log(config)
-            setAppConfig(config ?? AppConfigDefault)
+        console.log("first=="+first);
+        if(first){
+            setAppConfig(appConfigStartValue);
+            first = false;
         }
-        getConfigFromStorage()
+        else{
+        const getConfigFromStorage = async () => {
+            const config = await getConfigAsyncStorage();
+            console.log("setAppconfig");
+            console.log(config);
+            setAppConfig(config ?? AppConfigDefault);
+        }
+        getConfigFromStorage();
+        }
     }, []);
 
     useEffect(() => {
         console.log("appconfig effect")
-        if (appConfig) saveConfig(appConfig)
+        if (appConfig){
+            saveConfig(appConfig);
+        }
     }, [appConfig]);
 
 
@@ -239,7 +260,7 @@ export const Layout = () => {
 
     const getMainContent = () => {
         if (!appConfig) throw new Error("app config is required for main content, its checked in render method, rn cant infer it");
-
+      
         switch (page) {
             case "home":
                 return <HomeView

@@ -2,12 +2,19 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import { FunctionComponent, useEffect, useState } from 'react';
 import CheckBox from 'expo-checkbox';
 import { EventRegister } from 'react-native-event-listeners';
-import { AppConfig, AppConfigInterface, SettingsParams } from "../Layout";
+import { Picker } from '@react-native-picker/picker';
+import { AppConfig, AppConfigInterface, Medium, SettingsParams, Topic, topicsAvailable } from "../Layout";
 
 /**
  * Settings view    
  */
 export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, setConfig}) => {
+
+    //console.log(config);
+    let currentConfig = config;
+    const [currentTopic, setCurrentTopic] = useState("en_de");
+    const [currentMedia, setCurrentMedia] = useState(Array<Medium>());
+    const [cardsPerDay, setCardsPerDay] = useState(0);
 
     const [nickname, setNickname] = useState("");
     const [notifications, setNotifications] = useState(true);
@@ -16,8 +23,33 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
     const [showAudio, setShowAudio] = useState(false);
     const [autoplay, setAutoplay] = useState(true);
 
+    function saveSettings(mediaArray: Medium[]){
+        switch(currentTopic){
+            case topicsAvailable[0]:{
+                if(currentConfig.topics.en_de){
+                    currentConfig.topics.en_de.mediums = mediaArray;
+                }
+                break;
+            }
+            case topicsAvailable[1]:{
+                if(currentConfig.topics.geography){
+                    currentConfig.topics.geography.mediums = mediaArray;
+                }
+                break;
+            }
+            case topicsAvailable[2]:{
+                if(currentConfig.topics.idktodo){
+                    currentConfig.topics.idktodo.mediums = mediaArray;
+                }
+                break;
+            }
+        }
+        setConfig(currentConfig);
+        determineSettings();
+    }
+    
     function makeMediaArray(char: string, activated: boolean) {
-        let array = new Array<string>();
+        let array = new Array<Medium>();
         switch (char) {
             case 'i': {
                 activated ? array = array.concat("img") : {};
@@ -44,22 +76,56 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
 
     function toggleShowImages(newValue: boolean) {
         setShowImages(newValue);
-        EventRegister.emit('toggleMedia', makeMediaArray('i', newValue));
+        saveSettings(makeMediaArray('i', newValue));
     }
 
     function toggleShowText(newValue: boolean) {
         setShowText(newValue);
-        EventRegister.emit('toggleMedia', makeMediaArray('t', newValue));
+        saveSettings(makeMediaArray('t', newValue));
     }
 
     function toggleShowAudio(newValue: boolean) {
         setShowAudio(newValue);
-        EventRegister.emit('toggleMedia', makeMediaArray('a', newValue));
+        saveSettings(makeMediaArray('a', newValue));
     }
 
     function determineSettings() {
-        //console.log("determineSettings() has been called!");
-        let mediums = config.topics.idktodo?.mediums;
+        console.log("determineSettings() has been called!");
+        console.log(currentConfig);
+        let mediums: Medium[] | undefined;
+        let cardsPerDay: number = 0;
+        switch(currentTopic){
+            case topicsAvailable[0]:{
+                if(currentConfig.topics.en_de && currentConfig.topics.en_de.mediums){
+                    mediums = currentConfig.topics.en_de!.mediums;
+                    cardsPerDay = currentConfig.topics.en_de!.cardsPerDay;
+                    console.log("en_de-media: "+mediums);
+                }
+                break;
+            }
+            case topicsAvailable[1]:{
+                if(currentConfig.topics.geography && currentConfig.topics.geography.mediums){
+                    mediums = currentConfig.topics.geography!.mediums;
+                    cardsPerDay = currentConfig.topics.geography!.cardsPerDay;
+                    console.log("geography-media: "+mediums);
+                }
+                break;
+            }
+            case topicsAvailable[2]:{
+                if(currentConfig.topics.idktodo && currentConfig.topics.idktodo.mediums){
+                    mediums = currentConfig.topics.idktodo!.mediums;
+                    cardsPerDay = currentConfig.topics.idktodo!.cardsPerDay;
+                    console.log("idktodo-media: "+mediums);
+                }
+                break;
+            }
+        }
+        //console.log(mediums);
+        //reset checkboxes:
+        setShowImages(false);
+        setShowText(false);
+        setShowAudio(false);
+        //set checkboxes:
         if(mediums){
             for (let i = 0; i < mediums.length; ++i) {
                 switch (mediums[i]) {
@@ -69,7 +135,8 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
                 }
             }
         }
-        setNickname(config.username ?? "please enter username here");
+        setNickname(currentConfig.username ?? "");
+        setCardsPerDay(cardsPerDay);
     }
 
     function submitNewUsername() {
@@ -80,6 +147,13 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
     useEffect(() => {
         determineSettings();
     }, [])
+
+    // on value change of currentTopic: show settings for that topic!
+    useEffect(() => {
+        console.log("currentTopic=="+currentTopic);
+        determineSettings();
+        //console.log("currentTopic=="+currentTopic);
+    }, [currentTopic])
 
     return (
         <View style={styles.mainContainer}>
@@ -106,6 +180,18 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
             </View>
             <Text style={styles.title}>Media</Text>
             <View style={styles.subContainer}>
+            <Picker
+                selectedValue={currentTopic}
+                onValueChange={(itemValue, itemIndex) => {
+                    setCurrentTopic(itemValue); 
+                }}
+            >
+                <Picker.Item label="English" value="en_de" />
+                <Picker.Item label="Geography" value="geography" />
+                <Picker.Item label="History" value="idktodo" />
+                <Picker.Item label="Italian" value="idktodo" />
+                <Picker.Item label="Spanish" value="idktodo" />
+            </Picker>
                 <View style={styles.checkboxContainer}>
                     <Text style={styles.inputText}>Show Images:</Text>
                     <CheckBox
@@ -114,14 +200,14 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
                         onValueChange={() => toggleShowImages(!showImages)}
                     />
                 </View>
-                <View style={styles.checkboxContainer}>
+                {/*<View style={styles.checkboxContainer}>
                     <Text style={styles.inputText}>Show Text:</Text>
                     <CheckBox
-                        disabled={false}
+                        disabled={true}
                         value={showText}
                         onValueChange={() => toggleShowText(!showText)}
                     />
-                </View>
+                </View>*/}
                 <View style={styles.checkboxContainer}>
                     <Text style={styles.inputText}>Show Audio:</Text>
                     <CheckBox
@@ -130,12 +216,22 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
                         onValueChange={() => toggleShowAudio(!showAudio)}
                     />
                 </View>
-                <View style={styles.checkboxContainer}>
-                    <Text style={styles.inputText}>Autoplay:</Text>
+                <View style={styles.checkboxContainerAutoplay}>
+                    <Text style={styles.inputTextAutoplay}>Autoplay Audio:</Text>
                     <CheckBox
                         disabled={false}
                         value={autoplay}
                         onValueChange={(newValue) => setAutoplay(newValue)}
+                    />
+                </View>
+                <View style={styles.rowContainer}>
+                    <Text style={styles.inputText}>Cards per Day:</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(value) => setCardsPerDay(Number(value))}
+                        onSubmitEditing={() => {}}
+                        placeholder="xxx"
+                        value={String(cardsPerDay)}
                     />
                 </View>
             </View>
@@ -158,6 +254,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: 20,
+        marginLeft: 32,
+        marginRight: 64,
+        marginBottom: 10,
+    },
+    checkboxContainerAutoplay: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 5,
         marginLeft: 64,
         marginRight: 64,
         marginBottom: 10,
@@ -178,11 +283,18 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginRight: 10,
     },
+    inputTextAutoplay: {
+        color: '#212f3d',
+        fontSize: 14,
+        fontWeight: 'regular',
+        marginRight: 10,
+    },
     mainContainer: {
         marginHorizontal: 20,
         backgroundColor: '#d2d2d2',
         padding: 10,
         borderRadius: 5,
+        paddingBottom: 300,
     },
     rowContainer: {
         flexDirection: 'row',
