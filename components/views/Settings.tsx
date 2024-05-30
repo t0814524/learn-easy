@@ -157,7 +157,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                 </View>
             </View>
             <Text style={styles.title}>Media</Text>
-            <View style={styles.subContainer}>
+            <View style={{ ...styles.subContainer, ...{ minHeight: Dimensions.get("window").height || 800 } }}>
                 <Picker
                     selectedValue={topic}
                     onValueChange={(itemValue) => {
@@ -240,7 +240,6 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     subContainer: {
-        minHeight: Dimensions.get("window").height || 800,
         marginHorizontal: 20,
         backgroundColor: '#FFF',
         padding: 20,
