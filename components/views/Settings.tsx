@@ -17,7 +17,7 @@ export interface SettingsViewProps {
  */
 export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppConfig }) => {
     console.log("SettingsView")
-    const [topic, setTopic] = useState<Topic>("en_de");
+    const [topic, setTopic] = useState<Topic>("german");
     const [nickname, setNickname] = useState("");
     const [notifications, setNotifications] = useState(true); // not used rn
 
