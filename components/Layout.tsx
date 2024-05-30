@@ -161,8 +161,7 @@ export const Layout = () => {
 
     let [page, setPage] = useState<Page>("home");
 
-    //todo: @nelin pls impl setting the topic in home page
-    let [topic, setTopic] = useState<Topic>("en_de");
+    let [topic, setTopic] = useState<Topic>();
 
 
     const [username, setUsername] = useState(""); //default string shown at start, is replaced by username when set
@@ -206,14 +205,13 @@ export const Layout = () => {
         }
     }, []);
 
-    const [cards, setCards] = useState<CardSrc[]>(); //default string shown at start, is replaced by username when set
 
     /**
      * used to dynamically load the cards from json file  
      * 
      */
     const loadCards = async (topic: Topic) => {
-
+        console.log("load cardsss")
         /**
          * this would have been nice but its a metro feature to not be able to dynamically import anything but a string, not even const from this map  
          * might work with some babel presets  
@@ -225,6 +223,7 @@ export const Layout = () => {
              idktodo: "../data/idktodo.json"
          }
  */
+
         const importMap: { [key in Topic]: Promise<CardSrc[]> } = {
             en_de: import("../data/en_de.json").then(module => module.default),
             geography: import("../data/geography.json").then(module => module.default),
@@ -234,40 +233,18 @@ export const Layout = () => {
             french: import("../data/french.json").then(module => module.default),
             history: import("../data/history.json").then(module => module.default),
         };
-        const fileImport = importMap[topic];
-
-        fileImport.then(res => {
-            console.log("loading cards from json file for topic:", topic);
-            setCards(res);
-        }).catch(err => {
-            console.error("error loading cards for topic:", topic);
-            console.error(err);
-        });
+        // const fileImport = importMap[topic];
+        return importMap[topic]
     };
 
     const getMainContent = () => {
         if (!appConfig) throw new Error("app config is required for main content, its checked in render method, rn cant infer it");
 
-        // this is mb not ideal but works for me @emanuel  
-        // default config is used here for topicConfig and merged with actual config, mb better to actually set the appConfig in case of default
-        // you have to use the appConfig in settings and set it with the react set state fn, then it should auto update.. hopefully
-        let topicConfig = { ...TopicConfigDefault, ...appConfig.topics[topic] }
-        console.log('tc')
-        console.log(topicConfig)
         switch (page) {
             case "home":
                 return <HomeView
                     setPage={(page, topic) => {
-                        if (topic) {
-                            setTopic(topic as Topic);
-                            setAppConfig(prev => ({
-                                ...prev,
-                                topics: {
-                                    ...prev?.topics,
-                                    [topic]: prev?.topics[topic] ?? TopicConfigDefault
-                                }
-                            }));
-                        }
+                        setTopic(topic)
                         setPage(page);
                     }}
                     username={username}
@@ -276,12 +253,14 @@ export const Layout = () => {
                 return <SettingsView config={appConfig} setConfig={setAppConfig} />
             case "learn":
                 console.log("learn in getmaincontentr")
-                if (!topic) throw new Error("topic has to be selected before going to learn page"); //todo: make default nullish
+                if (!topic) throw new Error("topic has to be selected before going to learn page");
 
-                loadCards(topic)
+                let topicConfig = { ...TopicConfigDefault, ...appConfig.topics[topic] }
+                console.log('tc')
+                console.log(topicConfig)
 
-                if (!cards) return <Text>loading cards...</Text>
 
+                // if (!cards) return <Text>No cards available</Text>;
                 const onCardRated = (c: Card & { index: number }) => {
                     setAppConfig(prev => {
                         if (!prev) throw new Error("appConfig has to be set by the time cards are rated.");
@@ -309,49 +288,54 @@ export const Layout = () => {
                 let cardsLastAddedTime = topicConfig.cardsLastAdded
                 // let cardsLearning = appConfig?.topics[topic]?.cardsLearning || TopicConfigDefault.cardsLearning
 
-                // cards learning should be increased 
                 let cardsLearning = topicConfig.cardsLearning
+                console.log("cardsLearning")
+                console.log(cardsLearning)
 
                 console.log(cardsLastAddedTime)
                 console.log(new Date().getTime())
                 console.log(interval)
+                // console.log(cards)
+
+                // new cards should be added: 
                 if (!cardsLastAddedTime || (new Date().getTime() - cardsLastAddedTime) > interval) {
+                    console.log("add new cards")
 
-                    let cardsPerDay = topicConfig.cardsPerDay
-                    let newCards = cards.slice(cardsLearning.length, cardsLearning.length + cardsPerDay)
+                    loadCards(topic).then((cards: CardSrc[]) => {
+                        let cardsPerDay = topicConfig.cardsPerDay
+                        let newCards = cards.slice(cardsLearning.length, cardsLearning.length + cardsPerDay)
 
+                        setAppConfig(prev => {
+                            return {
+                                ...prev,
+                                topics: {
+                                    ...prev?.topics,
+                                    [topic]:
+                                    {
+                                        ...prev?.topics[topic],
+                                        cardsLearning: cardsLearning.concat(newCards.map((el, i) => ({
+                                            ...el,
 
-                    setAppConfig(prev => {
-                        return {
-                            ...prev,
-                            topics: {
-                                ...prev?.topics,
-                                [topic]:
-                                {
-                                    ...prev?.topics[topic],
-                                    cardsLearning: cardsLearning.concat(newCards.map((el, i) => ({
-                                        ...el,
+                                            // index to map card to position in json definition file
+                                            index: cardsLearning.length + i,
 
-                                        // index to map card to position in json definition file
-                                        index: cardsLearning.length + i,
+                                            // sm2
+                                            n: 0,
+                                            ef: 2.5,
+                                            i: 0,
 
-                                        // sm2
-                                        n: 0,
-                                        ef: 2.5,
-                                        i: 0,
+                                            // exact time when added
+                                            due: new Date().getTime()
+                                        })
+                                        )),
 
-                                        // exact time when added
-                                        due: new Date().getTime()
-                                    })
-                                    )),
-
-                                    cardsLastAdded: new Date().getTime()
+                                        cardsLastAdded: new Date().getTime()
+                                    }
                                 }
                             }
-                        }
-                    })
+                        })
+                    });
                 }
-
 
 
                 return <>
@@ -360,10 +344,7 @@ export const Layout = () => {
                             <LearnView
                                 key="learnView"
                                 onCardRated={onCardRated}
-                                // topicConfig={appConfig.topics[topic]}
-                                // cardsScheduled={appConfig.topics[topic]?.cardsLearning}
                                 cardsLearning={appConfig.topics[topic]?.cardsLearning ?? []}
-                                // mediumSettings={appConfig.topics[topic]?.mediums ?? TopicConfigDefault.mediums}
                                 mediumSettings={topicConfig.mediums}
                             />
                             :

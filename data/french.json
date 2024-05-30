@@ -1,6 +1,14 @@
 [
   {
-    "question": "What is the French word for 'apple'?",
+    "question": "apple",
     "answer": "Pomme"
+  },
+  {
+    "question": "apple2",
+    "answer": "Pomme2"
+  },
+  {
+    "question": "apple3",
+    "answer": "Pomme3"
   }
 ]
