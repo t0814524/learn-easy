@@ -191,7 +191,6 @@ export const Layout = () => {
                     })
                 }
 
-
                 // add new cards if more than 24h since last added or none added yet
                 let interval = topicConfig.interval
                 let cardsLastAddedTime = topicConfig.cardsLastAdded
@@ -202,8 +201,15 @@ export const Layout = () => {
                 if (!cardsLastAddedTime || (new Date().getTime() - cardsLastAddedTime) > interval) {
 
                     loadCards(topic).then((cards: CardSrc[]) => {
+                        // if (cardsLearning.length >= cards.length) {
+                        //     console.log("no more cards available")
+                        //     return
+                        // }
                         let cardsPerDay = topicConfig.cardsPerDay
-                        let newCards = cards.slice(cardsLearning.length, cardsLearning.length + cardsPerDay)
+
+                        let start = cardsLearning.length
+                        let end = cardsLearning.length + Number(cardsPerDay)
+                        let newCards = cards.slice(start, end)
 
                         setAppConfig(prev => {
                             return {
