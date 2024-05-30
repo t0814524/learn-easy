@@ -1,4 +1,4 @@
-import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Dimensions, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useState } from 'react';
 import CheckBox from 'expo-checkbox';
 import { Picker } from '@react-native-picker/picker';
@@ -18,7 +18,6 @@ export interface SettingsViewProps {
 export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppConfig }) => {
     console.log("SettingsView")
     const [topic, setTopic] = useState<Topic>("german");
-    const [nickname, setNickname] = useState("");
     const [notifications, setNotifications] = useState(true); // not used rn
 
     const TopicSettings = () => {
@@ -122,7 +121,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                                 }
                             })
                         }}
-                        onSubmitEditing={() => { }}
                         placeholder="xxx"
                         value={String(tc?.cardsPerDay)}
                     />
@@ -138,13 +136,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                     <Text style={styles.inputText}>username:</Text>
                     <TextInput
                         style={styles.input}
-                        onChangeText={(value) => setNickname(value)}
-                        onSubmitEditing={() => {
+                        onChangeText={(value) => {
                             setAppConfig(prev => ({
                                 ...prev,
-                                username: nickname
+                                username: value
                             }));
-
 
                         }}
                         placeholder="enter username here"
@@ -244,6 +240,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     subContainer: {
+        minHeight: Dimensions.get("window").height || 800,
         marginHorizontal: 20,
         backgroundColor: '#FFF',
         padding: 20,
