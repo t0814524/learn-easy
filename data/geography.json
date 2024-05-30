@@ -4,11 +4,19 @@
         "answer": "Wien"
     },
     {
-        "question": "Deutschland",
+        "question": "Germany",
         "answer": "Berlin"
     },
     {
         "question": "Czech",
         "answer": "Prag"
+    },
+    {
+        "question": "United Kingdom",
+        "answer": "London"
+    },
+    {
+        "question": "France",
+        "answer": "Paris"
     }
 ]

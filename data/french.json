@@ -4,11 +4,19 @@
     "answer": "Pomme"
   },
   {
-    "question": "apple2",
-    "answer": "Pomme2"
+    "question": "mountain",
+    "answer": "montagne"
   },
   {
-    "question": "apple3",
-    "answer": "Pomme3"
+    "question": "sea",
+    "answer": "mer"
+  },
+  {
+    "question": "sailboat",
+    "answer": "voilier"
+  },
+  {
+    "question": "piano player",
+    "answer": "pianiste"
   }
 ]

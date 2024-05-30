@@ -1,6 +1,22 @@
 [
   {
-    "question": "What is the Spanish word for 'apple'?",
+    "question": "apple",
     "answer": "Manzana"
+  },
+  {
+    "question": "traffic light",
+    "answer": "semáforo"
+  },
+  {
+    "question": "strawberry",
+    "answer": "fresa"
+  },
+  {
+    "question": "orange",
+    "answer": "naranja"
+  },
+  {
+    "question": "horse",
+    "answer": "caballo"
   }
 ]
