@@ -42,26 +42,18 @@ const style = StyleSheet.create({
  * imo easiest way would be to use this as a list from where the topics on the main page are generated from (if u use setTopic onClick in the list the learn mode starts which already addes the topicconfig and saves it)   
  * or even better would be to have some ui to select which topics u want to learn (select from `topicsAvailable`) and for these topics add a topicConfig entry in the appConfig, then base the list in the main menu on the topics dict of the appConfig  
  * */
-export const topicsAvailable = ["en_de", "geography", "idktodo", "italian", "spanish", "french", "history"] as const
-
+export const topicsAvailable = ["en_de", "geography", "italian", "spanish", "french", "history"] as const
 export type Topic = typeof topicsAvailable[number]
-// export type Topic = "en_de" | "geography" | "idktodo"
+
 export type Medium = "img" | "text" | "audio"
 
-
 /**
- * @emanuel
- * das is eig nur um die types nicer zu designen aber kannst auch direkt topicconfig verwenden.  
- * topicconfig is das plus mehr (cardslastadded zb is internal und nicht wichtig fur die settings)  
- * eig muss alles auf der appConfig basieren dass der state ueberall funktioniert und auch gespeichert wird
+ * params required for settings  
+ * subset of TopicConfig
  */
 interface TopicSettings {
     mediums: Medium[],
-    /**
-     * todo put that in the settings
-     */
     cardsPerDay: number,
-
 }
 
 /**
@@ -73,7 +65,7 @@ export interface TopicConfig extends TopicSettings {
      * number of cards being learnt  
      * 
      * As we do not implement sorting of decks and they have a fixed order, we can store a list of cards per topic.  
-     * A number ({@link cardsLearning}) which is the index up to which the cards are currently being lernt.  
+     * The length of this arr can be used as index, up to which the cards are currently being lernt.  
      * An array for cardsScheduled can be generated from the currently learnt cards under consideration of the sm2 properties.  
      */
     cardsLearning: (Card & { index: number })[]
@@ -89,9 +81,7 @@ export const TopicConfigDefault: TopicConfig = {
     cardsLearning: [],
     cardsPerDay: 1,
     mediums: ["img", "text", "audio"],
-    // interval: 1000 * 60 * 60 * 24 // 1d
     interval: 1000 * 60 * 1 // 1min 
-    // cardsLastAdded: null
 }
 
 export interface AppConfig {
@@ -101,13 +91,6 @@ export interface AppConfig {
 
 export const AppConfigDefault = {
     topics: {}
-}
-
-
-export interface SettingsParams {
-    username: string,
-    mediums: Medium[],
-    cardsPerDay: number,
 }
 
 export interface CardSrc {
@@ -130,15 +113,12 @@ export const Layout = () => {
      * @param config AppConfig to save  
      */
     const saveConfig = (config: AppConfig) => {
+        console.log("saveConfig");
         if (appConfig) {
-            console.log("saving config");
-            console.log(config);
-            // setAppConfig(config)
             saveConfigAsyncStorage(config);
         }
     }
     useEffect(() => {
-        console.log("empty eff")
         const getConfigFromStorage = async () => {
             const config = await getConfigAsyncStorage();
             console.log("setAppconfig");
@@ -147,11 +127,9 @@ export const Layout = () => {
             setLoading(false)
         }
         getConfigFromStorage();
-
     }, []);
 
     useEffect(() => {
-        console.log("appconfig effect")
         if (appConfig) {
             saveConfig(appConfig);
         }
@@ -161,35 +139,6 @@ export const Layout = () => {
     let [page, setPage] = useState<Page>("home");
 
     let [topic, setTopic] = useState<Topic>();
-
-
-    /**
-     * 
-     * @emanuel 
-     * this should not be used, rather use appConfig itself so it gets updated and also written to persistent storage
-     * 
-     * todo: remove that and use appconfig!!!
-     * 
-     * arr in the order the different mediums should be shown on the cards  
-     * 
-     * ask: 
-     * could be done for front and back but idk if we rlly need that, also the order!?  
-     * depends on how much work we want to put in the settings page  
-    */
-    let [mediumSettings, setMediumSettings] = useState<SettingsParams['mediums']>(["img", "text", "audio"]);
-
-
-
-    useEffect(() => {
-        EventRegister.addEventListener('toggleMedia', (media) => {
-            console.log(media);
-            setMediumSettings(media);
-        });
-        return () => {
-            EventRegister.removeEventListener('toggleMedia');
-        }
-    }, []);
-
 
     /**
      * used to dynamically load the cards from json file  
@@ -212,13 +161,11 @@ export const Layout = () => {
         const importMap: { [key in Topic]: Promise<CardSrc[]> } = {
             en_de: import("../data/en_de.json").then(module => module.default),
             geography: import("../data/geography.json").then(module => module.default),
-            idktodo: import("../data/idktodo.json").then(module => module.default),
             italian: import("../data/italian.json").then(module => module.default),
             spanish: import("../data/spanish.json").then(module => module.default),
             french: import("../data/french.json").then(module => module.default),
             history: import("../data/history.json").then(module => module.default),
         };
-        // const fileImport = importMap[topic];
         return importMap[topic]
     };
 
@@ -237,7 +184,6 @@ export const Layout = () => {
                 />
             case "settings":
                 console.log("setttttings")
-                // if (!appConfig)
                 return <SettingsView appConfig={appConfig} setAppConfig={setAppConfig} />
             case "learn":
                 console.log("learn in getmaincontentr")
@@ -269,21 +215,11 @@ export const Layout = () => {
                 }
 
 
-                let interval = topicConfig.interval
                 // add new cards if more than 24h since last added or none added yet
-                // ask: do we have/want a progress bar or sth showing how many new cards there are on main page? then this should be done before going to the learn page for all topics
-                console.log("add cards")
+                let interval = topicConfig.interval
                 let cardsLastAddedTime = topicConfig.cardsLastAdded
-                // let cardsLearning = appConfig?.topics[topic]?.cardsLearning || TopicConfigDefault.cardsLearning
 
                 let cardsLearning = topicConfig.cardsLearning
-                console.log("cardsLearning")
-                console.log(cardsLearning)
-
-                console.log(cardsLastAddedTime)
-                console.log(new Date().getTime())
-                console.log(interval)
-                // console.log(cards)
 
                 // new cards should be added: 
                 if (!cardsLastAddedTime || (new Date().getTime() - cardsLastAddedTime) > interval) {
@@ -346,7 +282,10 @@ export const Layout = () => {
 
             case "statistics":
                 if (!topic) throw new Error("topic has to be selected before going to statistics page");
-                return <StatisticsView mediums={mediumSettings} cardsPerDay={appConfig.topics[topic]?.cardsPerDay ?? 0} username={appConfig.username} />
+                return <StatisticsView
+                    mediums={appConfig.topics[topic]?.mediums || TopicConfigDefault.mediums}
+                    cardsPerDay={appConfig.topics[topic]?.cardsPerDay ?? 0}
+                    username={appConfig.username} />
 
             default:
                 throw new Error("Illegal page value");

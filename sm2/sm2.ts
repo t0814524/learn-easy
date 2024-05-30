@@ -48,6 +48,5 @@ export function sm2(card: Card, q: number) {
     card.ef = ef
     card.i = i
     if (q >= 4) card.due = new Date().getTime() + interval; // set new due date only if rating is >=4 
-    // card.due.setDate(card.due.getDate() + card.i);
     return card
 }
