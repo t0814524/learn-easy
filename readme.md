@@ -1,6 +1,6 @@
 ## Readme - M3
 
-* Gruppe:	[1,2,3,4]
+* Gruppe:	[2]
 * Team-Nr.: 205
 * Projektthema: Learn Easy
 
@@ -35,8 +35,13 @@ Externe Libraries und Frameworks:
 
 Dauer der Entwicklung:
 [
- Tobias Schort: 30 Stunden,
+ Tobias Schort: 40 Stunden,
 ]
 
 Weitere Anmerkungen:
-[...]
+
+### card scheduling
+#### interval = 1min
+Die täglich zu lernenden Karten werden basierend auf dem implementierten spaced repetition algorithmus (bereits reviewed) und dem Setting `cards per day` bestimmt.
+Eigentlich vorgesehen ist, dass neue Karten täglich hinzugefügt werden.
+Um das Testen zu erleichtern haben wir jedoch das Intervall, welches zur bestimmung des Zeitpunktes des Hinzufügens herangezogen wird in der `topicConfigDefault` auf 1min gesetzt.
