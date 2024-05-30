@@ -6,8 +6,6 @@ import { StatisticsView } from "./views/Statistics";
 import { LearnView } from "./views/Learn";
 import { SettingsView } from "./views/Settings";
 import { HomeView } from "./views/Home";
-//import cardsImport from "../data/en_de_nouns_learning.json";
-import cardsImport from "../data/temp/en_de_learning.json";
 import { getConfigAsyncStorage, saveConfigAsyncStorage } from "./saveJson";
 import { Card as Sm2Card } from "../sm2/sm2";
 
@@ -44,7 +42,7 @@ const style = StyleSheet.create({
  * imo easiest way would be to use this as a list from where the topics on the main page are generated from (if u use setTopic onClick in the list the learn mode starts which already addes the topicconfig and saves it)   
  * or even better would be to have some ui to select which topics u want to learn (select from `topicsAvailable`) and for these topics add a topicConfig entry in the appConfig, then base the list in the main menu on the topics dict of the appConfig  
  * */
-export const topicsAvailable = ["en_de", "geography", "idktodo"] as const
+export const topicsAvailable = ["en_de", "geography", "idktodo", "italian", "spanish", "french", "history"] as const
 
 export type Topic = typeof topicsAvailable[number]
 // export type Topic = "en_de" | "geography" | "idktodo"
@@ -87,7 +85,7 @@ export interface TopicConfig extends TopicSettings {
     interval: number
 }
 
-const TopicConfigDefault: TopicConfig = {
+export const TopicConfigDefault: TopicConfig = {
     cardsLearning: [],
     cardsPerDay: 1,
     mediums: ["img", "text", "audio"],
@@ -101,16 +99,17 @@ export interface AppConfig {
     topics: { [key in Topic]?: TopicConfig }
 }
 
-const AppConfigDefault = {
+export const AppConfigDefault = {
     topics: {}
 }
 
 const appConfigStartValue = {
     username: "",
-    topics: { "en_de": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1},
-                "geography": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1},
-                "idktodo": {mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1}
-            }
+    topics: {
+        "en_de": { mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1 },
+        "geography": { mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1 },
+        "idktodo": { mediums: Array<Medium>("img", "text", "audio"), cardsPerDay: 42, cardsLearning: [], cardsLastAdded: 42, interval: 1000 * 60 * 1 }
+    }
 }
 
 export interface SettingsParams {
@@ -119,12 +118,6 @@ export interface SettingsParams {
     cardsPerDay: number,
 }
 
-export interface AppConfigInterface {
-    config: AppConfig,
-    setConfig: Function,
-}
-
-
 export interface CardSrc {
     question: string
     answer: string
@@ -132,13 +125,13 @@ export interface CardSrc {
     sound?: string
 }
 
-type Card = CardSrc & Sm2Card
+export type Card = CardSrc & Sm2Card
 
 export type Page = "home" | "learn" | "settings" | "statistics"
 export const Layout = () => {
 
-    let first: boolean = true; // flag for startup
-    let [appConfig, setAppConfig] = useState<AppConfig>();
+    let [loading, setLoading] = useState(true);
+    let [appConfig, setAppConfig] = useState<AppConfig>(AppConfigDefault);
 
     /**
      * save app config to file and state  
@@ -154,25 +147,20 @@ export const Layout = () => {
     }
     useEffect(() => {
         console.log("empty eff")
-        console.log("first=="+first);
-        if(first){
-            setAppConfig(appConfigStartValue);
-            first = false;
-        }
-        else{
         const getConfigFromStorage = async () => {
             const config = await getConfigAsyncStorage();
             console.log("setAppconfig");
             console.log(config);
             setAppConfig(config ?? AppConfigDefault);
+            setLoading(false)
         }
         getConfigFromStorage();
-        }
+
     }, []);
 
     useEffect(() => {
         console.log("appconfig effect")
-        if (appConfig){
+        if (appConfig) {
             saveConfig(appConfig);
         }
     }, [appConfig]);
@@ -260,7 +248,8 @@ export const Layout = () => {
 
     const getMainContent = () => {
         if (!appConfig) throw new Error("app config is required for main content, its checked in render method, rn cant infer it");
-      
+        console.log("page")
+        console.log(page)
         switch (page) {
             case "home":
                 return <HomeView
@@ -271,7 +260,9 @@ export const Layout = () => {
                     username={username}
                 />
             case "settings":
-                return <SettingsView config={appConfig} setConfig={setAppConfig} />
+                console.log("setttttings")
+                // if (!appConfig)
+                return <SettingsView appConfig={appConfig} setAppConfig={setAppConfig} />
             case "learn":
                 console.log("learn in getmaincontentr")
                 if (!topic) throw new Error("topic has to be selected before going to learn page");
@@ -378,7 +369,8 @@ export const Layout = () => {
 
 
             case "statistics":
-                return <StatisticsView mediums={mediumSettings} cardsPerDay={topicConfig?.cardsPerDay ?? 0} username={username} />
+                if (!topic) throw new Error("topic has to be selected before going to statistics page");
+                return <StatisticsView mediums={mediumSettings} cardsPerDay={appConfig.topics[topic]?.cardsPerDay ?? 0} username={username} />
 
             default:
                 throw new Error("Illegal page value");
@@ -404,9 +396,9 @@ export const Layout = () => {
                     id="mainSection"
                     style={style.mainSection}
                 >
-                    {appConfig ? // main content is dependent on config
-                        getMainContent()
-                        : <Text>loading config...</Text>
+                    {loading ?
+                        <Text>loading config...</Text>
+                        : getMainContent()
                     }
                 </View>
             </SafeAreaView >

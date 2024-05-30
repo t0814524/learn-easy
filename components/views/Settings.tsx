@@ -1,162 +1,119 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
-import { FunctionComponent, useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { useState } from 'react';
 import CheckBox from 'expo-checkbox';
-import { EventRegister } from 'react-native-event-listeners';
 import { Picker } from '@react-native-picker/picker';
-import { AppConfig, AppConfigInterface, Medium, SettingsParams, Topic, topicsAvailable } from "../Layout";
+import { AppConfig, Medium, Topic, TopicConfig, TopicConfigDefault, topicsAvailable } from "../Layout";
+
+
+export interface SettingsViewProps {
+    appConfig: AppConfig,
+    setAppConfig: React.Dispatch<React.SetStateAction<AppConfig>>,
+}
 
 /**
  * Settings view    
  */
-export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, setConfig}) => {
-
-    //console.log(config);
-    let currentConfig = config;
-    const [currentTopic, setCurrentTopic] = useState("en_de");
-    const [currentMedia, setCurrentMedia] = useState(Array<Medium>());
-    const [cardsPerDay, setCardsPerDay] = useState(0);
-
+export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppConfig }) => {
+    console.log("SettingsView")
+    const [topic, setTopic] = useState<Topic>("en_de");
     const [nickname, setNickname] = useState("");
-    const [notifications, setNotifications] = useState(true);
-    const [showImages, setShowImages] = useState(false);
-    const [showText, setShowText] = useState(false);
-    const [showAudio, setShowAudio] = useState(false);
-    const [autoplay, setAutoplay] = useState(true);
+    const [notifications, setNotifications] = useState(true); // not used rn
 
-    function saveSettings(mediaArray: Medium[]){
-        switch(currentTopic){
-            case topicsAvailable[0]:{
-                if(currentConfig.topics.en_de){
-                    currentConfig.topics.en_de.mediums = mediaArray;
-                }
-                break;
-            }
-            case topicsAvailable[1]:{
-                if(currentConfig.topics.geography){
-                    currentConfig.topics.geography.mediums = mediaArray;
-                }
-                break;
-            }
-            case topicsAvailable[2]:{
-                if(currentConfig.topics.idktodo){
-                    currentConfig.topics.idktodo.mediums = mediaArray;
-                }
-                break;
-            }
+    const TopicSettings = () => {
+        let tc = { ...TopicConfigDefault, ...appConfig.topics[topic] }
+        /**
+         * always the same order  
+         * from {@link TopicConfigDefault}:   
+         * mediums: ["img", "text", "audio"],  
+         * 
+         */
+        let mediaConfig = tc?.mediums || TopicConfigDefault.mediums
+
+        let img = mediaConfig.includes("img")
+        let text = mediaConfig.includes("text")
+        let audio = mediaConfig.includes("audio")
+
+        let mediaArr = () => {
+            let arr = []
+            if (img) arr.push("img")
+            if (text) arr.push("text")
+            if (audio) arr.push("audio")
+            return arr
         }
-        setConfig(currentConfig);
-        determineSettings();
-    }
-    
-    function makeMediaArray(char: string, activated: boolean) {
-        let array = new Array<Medium>();
-        switch (char) {
-            case 'i': {
-                activated ? array = array.concat("img") : {};
-                showText ? array = array.concat("text") : {};
-                showAudio ? array = array.concat("audio") : {};
-                break;
+
+        const setMediaType = (type: Medium) => {
+            switch (type) {
+                case ("img"):
+                    img = !img
+                    break;
+                case ("audio"):
+                    audio = !audio
+                    break;
+                case ("audio"):
+                    text = !text
+                    break;
             }
-            case 't': {
-                showImages ? array = array.concat("img") : {};
-                activated ? array = array.concat("text") : {};
-                showAudio ? array = array.concat("audio") : {};
-                break;
-            }
-            case 'a': {
-                showImages ? array = array.concat("img") : {};
-                showText ? array = array.concat("text") : {};
-                activated ? array = array.concat("audio") : {};
-                break;
-            }
+            setAppConfig(prev => {
+                return {
+                    ...prev,
+                    // topics[topic].mediums: mediaArr(),
+                    topics: {
+                        ...prev.topics,
+                        [topic]: {
+                            ...prev.topics[topic],
+                            mediums: mediaArr()
+                        }
+                    }
+                }
+            })
         }
-        //console.log(array[0]+array[1]+array[2]);
-        return array;
+
+        return (
+            <>
+                <View style={styles.checkboxContainer}>
+                    <Text style={styles.inputText}>Show Images:</Text>
+                    <CheckBox
+                        value={img}
+                        onValueChange={() => setMediaType("img")}
+                    />
+                </View>
+                <View style={styles.checkboxContainer}>
+                    <Text style={styles.inputText}>Show Text:</Text>
+                    <CheckBox
+                        value={text}
+                        onValueChange={() => setMediaType("text")}
+                    />
+                </View>
+                <View style={styles.checkboxContainer}>
+                    <Text style={styles.inputText}>Show Audio:</Text>
+                    <CheckBox
+                        value={audio}
+                        onValueChange={() => setMediaType("audio")}
+                    />
+                </View>
+                {/* <View style={styles.checkboxContainerAutoplay}>
+                    <Text style={styles.inputTextAutoplay}>Autoplay Audio:</Text>
+                    <CheckBox
+                    disabled={false}
+                    value={autoplay}
+                    onValueChange={(newValue) => setAutoplay(newValue)}
+                    />
+                </View> */}
+                <View style={styles.rowContainer}>
+                    <Text style={styles.inputText}>Cards per Day:</Text>
+                    <TextInput
+                        style={styles.input}
+                        // onChangeText={(value) => setCardsPerDay(Number(value))}
+                        onSubmitEditing={() => { }}
+                        placeholder="xxx"
+                        value={String(tc?.cardsPerDay)}
+                    />
+                </View>
+            </>
+        )
     }
-
-    function toggleShowImages(newValue: boolean) {
-        setShowImages(newValue);
-        saveSettings(makeMediaArray('i', newValue));
-    }
-
-    function toggleShowText(newValue: boolean) {
-        setShowText(newValue);
-        saveSettings(makeMediaArray('t', newValue));
-    }
-
-    function toggleShowAudio(newValue: boolean) {
-        setShowAudio(newValue);
-        saveSettings(makeMediaArray('a', newValue));
-    }
-
-    function determineSettings() {
-        console.log("determineSettings() has been called!");
-        console.log(currentConfig);
-        let mediums: Medium[] | undefined;
-        let cardsPerDay: number = 0;
-        switch(currentTopic){
-            case topicsAvailable[0]:{
-                if(currentConfig.topics.en_de && currentConfig.topics.en_de.mediums){
-                    mediums = currentConfig.topics.en_de!.mediums;
-                    cardsPerDay = currentConfig.topics.en_de!.cardsPerDay;
-                    console.log("en_de-media: "+mediums);
-                }
-                break;
-            }
-            case topicsAvailable[1]:{
-                if(currentConfig.topics.geography && currentConfig.topics.geography.mediums){
-                    mediums = currentConfig.topics.geography!.mediums;
-                    cardsPerDay = currentConfig.topics.geography!.cardsPerDay;
-                    console.log("geography-media: "+mediums);
-                }
-                break;
-            }
-            case topicsAvailable[2]:{
-                if(currentConfig.topics.idktodo && currentConfig.topics.idktodo.mediums){
-                    mediums = currentConfig.topics.idktodo!.mediums;
-                    cardsPerDay = currentConfig.topics.idktodo!.cardsPerDay;
-                    console.log("idktodo-media: "+mediums);
-                }
-                break;
-            }
-        }
-        //console.log(mediums);
-        //reset checkboxes:
-        setShowImages(false);
-        setShowText(false);
-        setShowAudio(false);
-        //set checkboxes:
-        if(mediums){
-            for (let i = 0; i < mediums.length; ++i) {
-                switch (mediums[i]) {
-                    case "img": setShowImages(true); break;
-                    case "text": setShowText(true); break;
-                    case "audio": setShowAudio(true); break;
-                }
-            }
-        }
-        setNickname(currentConfig.username ?? "");
-        setCardsPerDay(cardsPerDay);
-    }
-
-    function submitNewUsername() {
-        //console.log(nickname);
-        EventRegister.emit('submitUsername', nickname);
-    }
-
-    useEffect(() => {
-        determineSettings();
-    }, [])
-
-    // on value change of currentTopic: show settings for that topic!
-    useEffect(() => {
-        console.log("currentTopic=="+currentTopic);
-        determineSettings();
-        //console.log("currentTopic=="+currentTopic);
-    }, [currentTopic])
-
     return (
-        <View style={styles.mainContainer}>
+        <ScrollView style={styles.mainContainer}>
             <Text style={styles.title}>General</Text>
             <View style={styles.subContainer}>
                 <View style={styles.rowContainer}>
@@ -164,9 +121,16 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
                     <TextInput
                         style={styles.input}
                         onChangeText={(value) => setNickname(value)}
-                        onSubmitEditing={() => submitNewUsername()}
+                        onSubmitEditing={() => {
+                            setAppConfig(prev => ({
+                                ...prev,
+                                username: nickname
+                            }));
+
+
+                        }}
                         placeholder="enter username here"
-                        value={nickname}
+                        value={appConfig.username}
                     />
                 </View>
                 <View style={styles.checkboxContainer}>
@@ -180,62 +144,21 @@ export const SettingsView: FunctionComponent<AppConfigInterface> = ({ config, se
             </View>
             <Text style={styles.title}>Media</Text>
             <View style={styles.subContainer}>
-            <Picker
-                selectedValue={currentTopic}
-                onValueChange={(itemValue, itemIndex) => {
-                    setCurrentTopic(itemValue); 
-                }}
-            >
-                <Picker.Item label="English" value="en_de" />
-                <Picker.Item label="Geography" value="geography" />
-                <Picker.Item label="History" value="idktodo" />
-                <Picker.Item label="Italian" value="idktodo" />
-                <Picker.Item label="Spanish" value="idktodo" />
-            </Picker>
-                <View style={styles.checkboxContainer}>
-                    <Text style={styles.inputText}>Show Images:</Text>
-                    <CheckBox
-                        disabled={false}
-                        value={showImages}
-                        onValueChange={() => toggleShowImages(!showImages)}
-                    />
-                </View>
-                {/*<View style={styles.checkboxContainer}>
-                    <Text style={styles.inputText}>Show Text:</Text>
-                    <CheckBox
-                        disabled={true}
-                        value={showText}
-                        onValueChange={() => toggleShowText(!showText)}
-                    />
-                </View>*/}
-                <View style={styles.checkboxContainer}>
-                    <Text style={styles.inputText}>Show Audio:</Text>
-                    <CheckBox
-                        disabled={false}
-                        value={showAudio}
-                        onValueChange={() => toggleShowAudio(!showAudio)}
-                    />
-                </View>
-                <View style={styles.checkboxContainerAutoplay}>
-                    <Text style={styles.inputTextAutoplay}>Autoplay Audio:</Text>
-                    <CheckBox
-                        disabled={false}
-                        value={autoplay}
-                        onValueChange={(newValue) => setAutoplay(newValue)}
-                    />
-                </View>
-                <View style={styles.rowContainer}>
-                    <Text style={styles.inputText}>Cards per Day:</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(value) => setCardsPerDay(Number(value))}
-                        onSubmitEditing={() => {}}
-                        placeholder="xxx"
-                        value={String(cardsPerDay)}
-                    />
-                </View>
+                <Picker
+                    selectedValue={topic}
+                    onValueChange={(itemValue, itemIndex) => {
+                        setTopic(itemValue);
+                    }}
+                >
+                    {
+                        topicsAvailable.map(topic => (
+                            <Picker.Item key={topic} label={topic} value={topic} />
+                        ))
+                    }
+                </Picker>
+                <TopicSettings></TopicSettings>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
