@@ -176,7 +176,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
             </View>
             <Text style={styles.title}>Learn Content</Text>
             <View style={{ ...styles.subContainer, ...{ marginBottom: Dimensions.get("window").height / 2.5 || 800 } }}>
+            <View style={styles.rowContainer}>
+                <Text style={{fontSize: 16}}>in Category:</Text>
                 <Picker
+                    style={{ marginLeft: 10, height: 80, width: 160, backgroundColor: "#d7dbdd" }}
                     selectedValue={topic}
                     onValueChange={(itemValue) => {
                         setTopic(itemValue);
@@ -188,6 +191,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                         ))
                     }
                 </Picker>
+                </View>
                 <TopicSettings></TopicSettings>
             </View>
         </ScrollView>
