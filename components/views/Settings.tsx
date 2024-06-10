@@ -102,7 +102,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                     <Text style={styles.inputText}>Show Images:</Text>
                     <BouncyCheckbox
                         size={30}
-                        fillColor="#0b5345"
+                        fillColor="#2ecc71"
                         unFillColor="#FFFFFF"
                         style={{marginLeft: 16}}
                         isChecked={img}
@@ -113,7 +113,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                     <Text style={styles.inputText}>Show Text:</Text>
                     <BouncyCheckbox
                         size={30}
-                        fillColor="#0b5345"
+                        fillColor="#2ecc71"
                         unFillColor="#FFFFFF"
                         style={{marginLeft: 38}}
                         isChecked={text}
@@ -124,7 +124,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                     <Text style={styles.inputText}>Show Audio:</Text>
                     <BouncyCheckbox
                         size={30}
-                        fillColor="#0b5345"
+                        fillColor="#2ecc71"
                         unFillColor="#FFFFFF"
                         style={{marginLeft: 27}}
                         isChecked={audio}
@@ -166,7 +166,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                     <Text style={styles.inputText}>Notifications:</Text>
                     <BouncyCheckbox
                         size={30}
-                        fillColor="#0b5345"
+                        fillColor="#2ecc71"
                         unFillColor="#FFFFFF"
                         style={{marginLeft: 16}}
                         isChecked={notifications}
@@ -179,7 +179,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
             <View style={styles.rowContainer}>
                 <Text style={{fontSize: 16}}>in Category:</Text>
                 <Picker
-                    style={{ marginLeft: 10, height: 80, width: 160, backgroundColor: "#d7dbdd" }}
+                    style={{ marginLeft: 10, height: 80, width: 160, backgroundColor: "#2ecc71" }}
                     selectedValue={topic}
                     onValueChange={(itemValue) => {
                         setTopic(itemValue);
