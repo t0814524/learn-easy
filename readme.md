@@ -1,4 +1,4 @@
-## Readme - M3
+## Readme - M4
 
 * Gruppe:	2
 * Team-Nr.: 205
@@ -17,7 +17,7 @@ Externe Libraries und Frameworks:
 [
 
     "@react-native-async-storage/async-storage": "^1.23.1",
-    "@react-native-picker/picker": "^2.7.6",
+    "react-native-bouncy-checkbox": "^4.0.1",
     "expo": "~51.0.2",
     "expo-checkbox": "^3.0.0",
     "expo-speech": "~12.0.2",
@@ -35,8 +35,9 @@ Externe Libraries und Frameworks:
 
 Dauer der Entwicklung:
 [
+ M3+M4:
  Tobias Schort: 40 Stunden,
- Emanuel Soellinger: 25 Stunden,
+ Emanuel Soellinger: 30 Stunden,
  Nelin Dogu: 10 Stunden
 ]
 
