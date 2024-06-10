@@ -4,6 +4,7 @@ import CheckBox from 'expo-checkbox';
 import { Picker } from '@react-native-picker/picker';
 import { AppConfig, Medium, Topic } from "../Layout";
 import { TopicConfigDefault, topicsAvailable } from "../constants";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 
 
@@ -99,23 +100,35 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                 </View>
                 <View style={styles.checkboxContainer}>
                     <Text style={styles.inputText}>Show Images:</Text>
-                    <CheckBox
-                        value={img}
-                        onValueChange={() => setMediaType("img")}
+                    <BouncyCheckbox
+                        size={30}
+                        fillColor="#0b5345"
+                        unFillColor="#FFFFFF"
+                        style={{marginLeft: 16}}
+                        isChecked={img}
+                        onPress={() => setMediaType("img")}
                     />
                 </View>
                 <View style={styles.checkboxContainer}>
                     <Text style={styles.inputText}>Show Text:</Text>
-                    <CheckBox
-                        value={text}
-                        onValueChange={() => setMediaType("text")}
+                    <BouncyCheckbox
+                        size={30}
+                        fillColor="#0b5345"
+                        unFillColor="#FFFFFF"
+                        style={{marginLeft: 38}}
+                        isChecked={text}
+                        onPress={() => setMediaType("text")}
                     />
                 </View>
                 <View style={styles.checkboxContainer}>
                     <Text style={styles.inputText}>Show Audio:</Text>
-                    <CheckBox
-                        value={audio}
-                        onValueChange={() => setMediaType("audio")}
+                    <BouncyCheckbox
+                        size={30}
+                        fillColor="#0b5345"
+                        unFillColor="#FFFFFF"
+                        style={{marginLeft: 27}}
+                        isChecked={audio}
+                        onPress={() => setMediaType("audio")}
                     />
                 </View>
                 {/* <View style={styles.checkboxContainerAutoplay}>
@@ -151,10 +164,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ appConfig, setAppCon
                 </View>
                 <View style={styles.checkboxContainer}>
                     <Text style={styles.inputText}>Notifications:</Text>
-                    <CheckBox
-                        disabled={false}
-                        value={notifications}
-                        onValueChange={(newValue) => setNotifications(newValue)}
+                    <BouncyCheckbox
+                        size={30}
+                        fillColor="#0b5345"
+                        unFillColor="#FFFFFF"
+                        style={{marginLeft: 16}}
+                        isChecked={notifications}
+                        onPress={(newValue) => setNotifications(newValue)}
                     />
                 </View>
             </View>
@@ -193,7 +209,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: 20,
-        marginLeft: 32,
+        marginLeft: 84,
         marginRight: 64,
         marginBottom: 10,
     },
