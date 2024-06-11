@@ -51,7 +51,7 @@ const style = StyleSheet.create({
     againBtn: {
         flex: 1,
         minHeight: 56,
-
+        margin: 0
     },
     ratingBtn: {
         flex: 1,
@@ -196,15 +196,15 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
             id="cardRating"
             style={style.rating}>
             <Separator />
-            <Text style={{alignSelf: "center"}} key="clickFlip">Tap on the image or text above to flip the cue card.</Text>
-            <Text style={{marginTop: 32, fontSize: 16, alignSelf: "center"}} key="ratingDesc">Rate the difficulty of this card to show the next:</Text>
+            {/* <Text style={{ alignSelf: "center" }} key="clickFlip">Tap on the image or text above to flip the cue card.</Text> */}
+            <Text style={{ marginTop: 32, fontSize: 16, alignSelf: "center" }} key="ratingDesc">Rate the difficulty of this card to show the next:</Text>
             <View style={style.ratingContainer}>
-                <Pressable key="hardBtn" style={{ ...styleCommon.topicContainer, ...style.ratingBtn }} onPress={() => rateCard(2)}><Text style={{fontSize: 20}}>Hard</Text></Pressable>
-                <Pressable key="goodBtn" style={{ ...styleCommon.topicContainer, ...style.ratingBtn }} onPress={() => rateCard(3)}><Text style={{fontSize: 20}}>Good</Text></Pressable>
-                <Pressable key="easyBtn" style={{ ...styleCommon.topicContainer, ...style.ratingBtn }} onPress={() => rateCard(5)}><Text style={{fontSize: 20}}>Easy</Text></Pressable>
+                <Pressable key="hardBtn" style={{ ...styleCommon.topicContainer, ...style.ratingBtn }} onPress={() => rateCard(2)}><Text style={{ fontSize: 20 }}>Hard</Text></Pressable>
+                <Pressable key="goodBtn" style={{ ...styleCommon.topicContainer, ...style.ratingBtn }} onPress={() => rateCard(3)}><Text style={{ fontSize: 20 }}>Good</Text></Pressable>
+                <Pressable key="easyBtn" style={{ ...styleCommon.topicContainer, ...style.ratingBtn }} onPress={() => rateCard(5)}><Text style={{ fontSize: 20 }}>Easy</Text></Pressable>
             </View>
             <View style={style.ratingContainer}>
-                <Pressable key="againBtn" style={{ ...styleCommon.topicContainer, ...style.againBtn }} onPress={() => rateCard(0)}><Text style={{fontSize: 20}}>Again</Text></Pressable>
+                <Pressable key="againBtn" style={{ ...styleCommon.topicContainer, ...style.againBtn }} onPress={() => rateCard(0)}><Text style={{ fontSize: 20 }}>Again</Text></Pressable>
             </View>
         </View>
 
@@ -214,8 +214,9 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
         <View key="flipExplain"
             id="flipExplain"
             style={style.flipExplain}>
-            <Separator />
-            <Text style={{fontSize: 16, alignSelf: "center"}} key="clickFlip">Tap on the image or text above to flip the cue card.</Text>
+            {/* <Separator /> */}
+            {/* <Text style={{fontSize: 16, alignSelf: "center"}} key="clickFlip">Tap on the image or text above to flip the cue card.</Text> */}
+            <Text style={{ fontSize: 16, alignSelf: "center" }} key="clickFlip">Tap to flip card.</Text>
         </View>
 
     )
@@ -240,7 +241,7 @@ export const LearnView: React.FC<LearnViewProps> = ({ cardsLearning, onCardRated
         if (!front) {
             jsx.push(CardRating)
         }
-        else{
+        else {
             jsx.push(flipExplain);
         }
         return jsx

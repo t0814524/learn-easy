@@ -67,8 +67,8 @@ export const styles = StyleSheet.create({
         // position: "relative",
         borderRadius: 5,
         backgroundColor: "#2ecc71",
-        borderWidth: 1,
-        borderColor: "black",
+        // borderWidth: 1,
+        // borderColor: "black",
         padding: 10,
     },
     topic: {
