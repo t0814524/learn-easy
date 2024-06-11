@@ -21,7 +21,7 @@ const style = StyleSheet.create({
         backgroundColor: '#138d75',
     },
     headerSection: {
-        flex: 0.7,
+        flex: 0.55,
         width: "100%",
         minHeight: 56, //  https://m3.material.io/components/search/specs
         backgroundColor: "#2ecc71",
