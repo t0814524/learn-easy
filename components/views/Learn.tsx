@@ -51,7 +51,7 @@ const style = StyleSheet.create({
     againBtn: {
         flex: 1,
         minHeight: 56,
-        margin: 0
+        marginTop: 0
     },
     ratingBtn: {
         flex: 1,
